@@ -14,6 +14,10 @@
             <v-icon right> fas fa-users </v-icon>
         </v-system-bar>
 
+        <v-overlay opacity="0.7">
+            <h1> Le site web est en cours de développement </h1>
+        </v-overlay>
+
         <!-- <div id="overlay"> </div> -->
     </v-app>
 </template>
