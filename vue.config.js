@@ -1,4 +1,6 @@
 module.exports = {
-    lintOnSave: false,
-    publicPath: process.env.NODE_ENV === 'production' ? '/hidden-jvc-website/' : '/'
+    publicPath: process.env.NODE_ENV === 'production' ? '/hidden-jvc-website/' : '/',
+    transpileDependencies: [
+        'vuetify'
+    ]
 };

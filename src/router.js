@@ -12,7 +12,7 @@ const router = new VueRouter({
         },
         {
             path: '/forums/:forumId',
-            component: () => import(/* webpackChunkName: "Topics" */ './views/Topics.vue')
+            component: () => import(/* webpackChunkName: "Forum" */ './views/Forum.vue')
         }
     ]
 });
