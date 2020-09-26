@@ -3,6 +3,7 @@ import vuetify from './plugins/vuetify';
 import './plugins/vee-validate';
 
 import App from './App.vue';
+import store from './store';
 import router from './router.js';
 
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
@@ -12,6 +13,7 @@ import './mixin.js';
 import './filters/index.js';
 
 new Vue({
+    store,
     router,
     vuetify,
     render: h => h(App)

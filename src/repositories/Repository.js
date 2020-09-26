@@ -1,5 +1,7 @@
-const API_ROOT_URL = 'http://127.0.0.1:8787';
+// const API_ROOT_URL = 'http://127.0.0.1:8787';
+const API_ROOT_URL = 'http://192.168.1.21:8787';
 
+import store from '../store';
 
 export default class Repository {
     async get(path, query = {}) {
@@ -14,12 +16,19 @@ export default class Repository {
 
     async post(path, body) {
         const url = `${API_ROOT_URL}/${path}`;
+
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        if (store.state.user.jwt !== null) {
+            headers.authorization = `Bearer ${store.state.user.jwt}`;
+        }
+
         const request = new Request(url, {
             method: 'POST',
-            body: JSON.stringify(body),
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers,
+            body: JSON.stringify(body)
         });
         const response = await fetch(request);
         return response.json();

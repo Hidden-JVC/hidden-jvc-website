@@ -9,6 +9,7 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.8.2",
         "date-fns": "^2.15.0",
+        "hidden-jvc-jvcode": "file:../hidden-jvc-jvcode",
         "roboto-fontface": "*",
         "vee-validate": "^3.2.4",
         "vue": "^2.6.12",

@@ -1,22 +1,29 @@
 <template>
     <v-row v-if="forum !== null" justify="center" no-gutters>
-        <v-col cols="8">
-            <v-card class="pa-4">
-                <v-row>
+        <v-col cols="12" lg="9">
+            <v-card class="pa-0 px-lg-4">
+                <v-row class="px-4">
                     <v-col>
-                        <h2 class="orange--text"> Forum {{ forum.Name }} </h2>
+                        <v-breadcrumbs class="pa-0" :items="[{text: 'Forums', href: '/'}, {text: 'Blabla 18-25 ans', href: '/'}, {text: 'Hidden', href: '/'}]"></v-breadcrumbs>
+                    </v-col>
+                </v-row>
+
+                <v-row class="px-4">
+                    <v-col>
+                        <h2 class="primary--text"> Forum {{ forum.Name }} </h2>
                     </v-col>
                 </v-row>
 
                 <v-row>
-                    <v-col cols="9">
-                        <v-row align="center">
-                            <v-col cols="3">
-                                <v-btn color="orange darken-4" small> Nouveau sujet </v-btn>
+                    <v-col cols="12" md="8" class="px-0 px-lg-3">
+                        <v-row class="px-4" align="center">
+                            <v-col cols="12" md="3">
+                                <v-btn color="primary" block small> Nouveau sujet </v-btn>
                             </v-col>
 
-                            <v-col cols="6">
-                                <v-row align="center">
+                            <v-col cols="12" md="6">
+                                <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="25" />
+                                <!-- <v-row align="center">
                                     <v-col cols="6">
                                         <v-text-field placeholder="Rechercher dans le forum" dense outlined hide-details />
                                     </v-col>
@@ -30,102 +37,35 @@
                                             <v-icon small> fas fa-search </v-icon>
                                         </v-btn>
                                     </v-col>
-                                </v-row>
+                                </v-row> -->
                             </v-col>
 
-                            <v-col cols="3" class="text-right">
-                                <v-btn small> Actualiser </v-btn>
+                            <v-col cols="12" md="3" class="text-right">
+                                <v-btn class="secondary" block small> Actualiser </v-btn>
                             </v-col>
                         </v-row>
 
-                        <v-simple-table dense id="forum-table">
-                            <template v-slot:default>
-                                <thead>
-                                    <tr>
-                                        <th style="width:1%"> </th>
-                                        <th style="width: 70%"> Sujet </th>
-                                        <th> Auteur </th>
-                                        <th> Nb </th>
-                                        <th> Dernier msg </th>
-                                    </tr>
-                                </thead>
+                        <TopicList :forum="forum" :topics="topics" />
 
-                                <tbody>
-                                    <tr v-for="topic of topics" :key="topic.Id">
-                                        <td>
-                                            <template v-if="topic.Topic.Pinned">
-                                                <template v-if="topic.Topic.Locked">
-                                                    <v-img src="@/assets/topic-marque-off.png" width="16" />
-                                                </template>
-                                                <template v-else>
-                                                    <v-img src="@/assets/topic-marque-on.png" width="16" />
-                                                </template>
-                                            </template>
-
-                                            <template v-else>
-                                                <template v-if="topic.Topic.Locked">
-                                                    <v-img src="@/assets/topic-lock.png" width="16" />
-                                                </template>
-                                                <template v-else>
-                                                    <template v-if="topic.PostsCount >= 20">
-                                                        <v-img src="@/assets/topic-dossier2.png" width="16" />
-                                                    </template>
-                                                    <template v-else>
-                                                        <v-img src="@/assets/topic-dossier1.png" width="16" />
-                                                    </template>
-                                                </template>
-                                            </template>
-
-                                        </td>
-
-                                        <td>
-                                            {{ topic.Topic.Title }}
-                                        </td>
-
-                                        <td :class="getUserClass(topic.Author)">
-                                            {{ getUsernameFromTopic(topic) }}
-                                        </td>
-
-                                        <td>
-                                            {{ topic.PostsCount }}
-                                        </td>
-
-                                        <td>
-                                            {{ topic.LastPostDate | topicLastPostDate() }}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </template>
-                        </v-simple-table>
+                        <CreateTopicForm />
                     </v-col>
 
-                    <v-col cols="3">
-                        <v-card outlined>
+                    <v-col cols="12" md="4">
+                        <!-- <v-card class="mb-4" outlined>
                             <v-card-title class="subtitle-2 pa-2" style="background-color: #303436;">
-                                Infos
-
-                                <span class="ml-auto">
-                                    <v-icon x-small> fa fa-users </v-icon>
-                                    0 connecté(s)
-                                </span>
+                                Larry
                             </v-card-title>
 
                             <v-card-text class="pa-0" style="background-color: #444a4d;">
-                                <v-list>
-                                    <v-list-item>
-                                        <v-list-item-content>
-                                            <v-list-item-title> Gestion du forum </v-list-item-title>
-                                            <v-list-item-subtitle style="white-space: normal">
-                                                Modérateurs:
-                                                <span style="color: white">
-                                                    Suumas Menchov-Giro Love-n-peace odoki LikeGod [FIREWORK]
-                                                </span>
-                                            </v-list-item-subtitle>
-                                        </v-list-item-content>
-                                    </v-list-item>
-                                </v-list>
+                                <v-img src="@/assets/larry.png" />
                             </v-card-text>
-                        </v-card>
+                        </v-card> -->
+
+                        <ForumMenu class="mb-4" />
+
+                        <AnonymousMenu class="mb-4" />
+
+                        <ModeratorsMenu class="mb-4" />
                     </v-col>
                 </v-row>
             </v-card>
@@ -134,8 +74,23 @@
 </template>
 
 <script>
+import ModeratorsMenu from '../components/forum/ModeratorsMenu';
+import ForumMenu from '../components/forum/ForumMenu';
+import AnonymousMenu from '../components/forum/AnonymousMenu';
+
+import CreateTopicForm from '../components/forum/CreateTopicForm';
+import TopicList from '../components/forum/TopicList';
+
 export default {
-    name: 'Topic',
+    name: 'Forum',
+
+    components: {
+        ModeratorsMenu,
+        ForumMenu,
+        CreateTopicForm,
+        TopicList,
+        AnonymousMenu
+    },
 
     data: () => ({
         loading: true,
@@ -148,10 +103,8 @@ export default {
 
         page: 1,
         limit: 20,
-        sortBy: 'CreationDate',
-        orderBy: 'ASC',
 
-        resetPage: false, // wether or not to reset the page to 1 when fetching the next sales
+        resetPage: false,
 
         pagesCount: 1,
 
@@ -169,33 +122,15 @@ export default {
     methods: {
         async fetchTopics() {
             this.loading = true;
+            this.setLoading(true);
 
             const { forum } = await this.repos.forum.getForum(this.$route.params.forumId);
             this.forum = forum;
             const { topics } = await this.repos.forum.getTopics(this.$route.params.forumId, this.page);
             this.topics = topics;
 
+            this.setLoading(false);
             this.loading = false;
-        },
-
-        getUserClass(user) {
-            if (user === null) {
-                return 'anonymous-user';
-            } else if (user.IsAdmin) {
-                return 'admin-user';
-            } else if (user.IsModerator) {
-                return 'moderator-user';
-            } else {
-                return 'registered-user';
-            }
-        },
-
-        getUsernameFromTopic(topic) {
-            if (topic.Author === null) {
-                return topic.Topic.Username;
-            } else {
-                return topic.Author.Name;
-            }
         }
     },
 
@@ -204,49 +139,3 @@ export default {
     }
 };
 </script>
-
-<style lang="scss" scoped>
-#forum-table::v-deep {
-    table tbody {
-        tr:nth-child(even) {
-            background-color: #181a1b;
-        }
-
-        tr:nth-child(odd) {
-            background-color: #1e2021;
-        }
-
-        tr {
-            td {
-                border-bottom: 0;
-
-                &:first-child {
-                    padding: 0px 5px;
-                }
-
-                &:nth-child(2) {
-                    padding: 0px 5px;
-                    cursor: pointer;
-                }
-
-                &:nth-child(2),
-                &:nth-child(5) {
-                    color: #4baeff;
-                }
-            }
-
-            td.admin-user {
-                color: red;
-            }
-
-            td.moderator-user {
-                color: green;
-            }
-
-            td.registered-user {
-                color: #4baeff;
-            }
-        }
-    }
-}
-</style>

@@ -8,6 +8,10 @@ class ForumRepository extends Repository {
     async getForum(forumId) {
         return await this.get(`jvc/forums/${forumId}`);
     }
+
+    async createTopic(forumId, title, content, username) {
+        return await this.post('hidden/topics', { forumId, title, content, username });
+    }
 }
 
 export default new ForumRepository();

@@ -4,8 +4,6 @@ import Vuetify from 'vuetify/lib/framework';
 import 'vuetify/dist/vuetify.min.css';
 import fr from 'vuetify/es5/locale/fr';
 
-import colors from 'vuetify/lib/util/colors';
-
 Vue.use(Vuetify);
 
 export default new Vuetify({
@@ -20,7 +18,7 @@ export default new Vuetify({
         dark: true,
         themes: {
             dark: {
-                primary: colors.blue.darken4
+                primary: '#060'
             }
         }
     }
