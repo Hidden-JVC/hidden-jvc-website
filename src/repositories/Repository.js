@@ -1,5 +1,5 @@
-// const API_ROOT_URL = 'http://127.0.0.1:8787';
-const API_ROOT_URL = 'http://192.168.1.21:8787';
+const API_ROOT_URL = 'https://api.hiddenjvc.com';
+// const API_ROOT_URL = 'http://192.168.1.21:8787';
 
 import store from '../store';
 
