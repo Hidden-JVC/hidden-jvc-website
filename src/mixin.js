@@ -1,13 +1,13 @@
 import Vue from 'vue';
 
 import user from './repositories/user.js';
-import forum from './repositories/forum.js';
+import hidden from './repositories/hidden.js';
 
 Vue.mixin({
     data: () => ({
         repos: {
             user,
-            forum
+            hidden
         }
     }),
 

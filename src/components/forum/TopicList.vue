@@ -40,7 +40,7 @@
                         </td>
 
                         <td>
-                            <a :href="`/#/forums/${forum.Id}/${topic.Topic.Id}`">
+                            <a :href="`/#/forums/${forum.Id}/hidden/${topic.Topic.Id}`">
                                 {{ topic.Topic.Title }}
                             </a>
                         </td>
@@ -90,7 +90,7 @@
 
                 <v-list-item-content class="pb-2">
                     <v-list-item-title class="mb-4">
-                        <a :href="`/#/forums/${forum.Id}/${topic.Topic.Id}`">
+                        <a :href="`/#/forums/${forum.Id}/hidden/${topic.Topic.Id}`">
                             {{ topic.Topic.Title }}
                         </a>
                         <span style="color: #748491">

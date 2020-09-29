@@ -1,10 +1,10 @@
 <template>
     <v-row v-if="forum !== null" justify="center" no-gutters>
         <v-col cols="12" lg="9">
-            <v-card class="pa-0 px-lg-4">
+            <v-card class="pa-0 px-lg-4" outlined>
                 <v-row class="px-4">
                     <v-col>
-                        <v-breadcrumbs class="pa-0" :items="[{text: 'Forums', href: '/'}, {text: 'Blabla 18-25 ans', href: '/'}, {text: 'Hidden', href: '/'}]"></v-breadcrumbs>
+                        <v-breadcrumbs class="pa-0" :items="breadcrumbs" />
                     </v-col>
                 </v-row>
 
@@ -22,22 +22,7 @@
                             </v-col>
 
                             <v-col cols="12" md="6">
-                                <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="25" />
-                                <!-- <v-row align="center">
-                                    <v-col cols="6">
-                                        <v-text-field placeholder="Rechercher dans le forum" dense outlined hide-details />
-                                    </v-col>
-
-                                    <v-col cols="4">
-                                        <v-select placeholder="Sujet" dense outlined hide-details />
-                                    </v-col>
-
-                                    <v-col cols="2">
-                                        <v-btn small>
-                                            <v-icon small> fas fa-search </v-icon>
-                                        </v-btn>
-                                    </v-col>
-                                </v-row> -->
+                                <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" @input="fetchTopics()" />
                             </v-col>
 
                             <v-col cols="12" md="3" class="text-right">
@@ -74,9 +59,9 @@
 </template>
 
 <script>
-import ModeratorsMenu from '../components/forum/ModeratorsMenu';
 import ForumMenu from '../components/forum/ForumMenu';
 import AnonymousMenu from '../components/forum/AnonymousMenu';
+import ModeratorsMenu from '../components/forum/ModeratorsMenu';
 
 import CreateTopicForm from '../components/forum/CreateTopicForm';
 import TopicList from '../components/forum/TopicList';
@@ -95,18 +80,8 @@ export default {
     data: () => ({
         loading: true,
 
-        quickSearch: null,
-        filtersToggled: true,
-
-        titleFilter: null,
-        userFilter: null,
-
         page: 1,
         limit: 20,
-
-        resetPage: false,
-
-        pagesCount: 1,
 
         forum: null,
         topics: [],
@@ -124,13 +99,39 @@ export default {
             this.loading = true;
             this.setLoading(true);
 
-            const { forum } = await this.repos.forum.getForum(this.$route.params.forumId);
-            this.forum = forum;
-            const { topics } = await this.repos.forum.getTopics(this.$route.params.forumId, this.page);
+            if (this.forum === null) {
+                const { forum } = await this.repos.hidden.getForum(this.$route.params.forumId);
+                this.forum = forum;
+            }
+
+            const { topics, count } = await this.repos.hidden.getTopics(this.$route.params.forumId, this.page);
             this.topics = topics;
+            this.topicsCount = count;
 
             this.setLoading(false);
             this.loading = false;
+        }
+    },
+
+    computed: {
+        breadcrumbs() {
+            if (this.forum === null || this.topic === null) {
+                return [];
+            }
+
+            return [
+                { text: 'Forums', to: '/forums', exact: true },
+                { text: this.forum.Name, to: `/forums/${this.forum.Id}`,exact: true },
+                { text: 'Hidden', to: `/forums/${this.forum.Id}/hidden`,exact: true }
+            ];
+        },
+
+        paginationLength() {
+            let length = Math.ceil(this.topicsCount / this.limit);
+            if (length === 0 || isNaN(length)) {
+                length = 1;
+            }
+            return length;
         }
     },
 

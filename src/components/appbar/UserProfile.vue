@@ -3,7 +3,7 @@
         <template v-slot:activator="{ on }">
             <v-btn class="text-none" text v-on="on">
                 <v-icon left> fas fa-user-circle </v-icon>
-                    {{ $store.state.user.name }}
+                {{ $store.state.user.name }}
                 <v-icon right> fas fa-caret-down </v-icon>
             </v-btn>
         </template>
@@ -23,6 +23,14 @@
             </v-list-item>
 
             <v-divider />
+
+            <v-list-item class="py-2" @click="disconnect()">
+                <v-list-item-action>
+                    <v-icon small> fas fa-user </v-icon>
+                </v-list-item-action>
+
+                <v-list-item-title> Profile </v-list-item-title>
+            </v-list-item>
 
             <v-list-item class="py-2" @click="disconnect()">
                 <v-list-item-action>

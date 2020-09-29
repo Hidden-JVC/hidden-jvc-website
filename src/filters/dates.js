@@ -13,6 +13,4 @@ Vue.filter('topicLastPostDate', (str) => {
     }
 });
 
-// Vue.filter('toLocaleDateString', (str) => format(new Date(str), 'dd/MM/yyyy', { locale: fr }));
-// Vue.filter('toLocaleTimeString', (str) => format(new Date(str), 'kk:mm:ss', { locale: fr }));
-// Vue.filter('toLocaleDateTimeString', (str) => format(new Date(str), 'dd MMMM yyyy à kk:mm:ss', { locale: fr }));
+Vue.filter('postDate', (str) => format(new Date(str), 'dd MMMM yyyy à kk:mm:ss', { locale: fr }));

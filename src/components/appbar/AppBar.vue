@@ -33,6 +33,8 @@
 
         <v-spacer />
 
+        <v-icon class="mr-4" small> fas fa-question-circle </v-icon>
+
         <v-badge :content="6" class="mr-6">
             <v-icon class="mr-2" small> fas fa-bell </v-icon>
         </v-badge>
