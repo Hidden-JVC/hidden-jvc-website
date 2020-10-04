@@ -7,7 +7,8 @@ export default {
         jwt: null,
         isAdmin: false,
         moderators: [],
-        anonymousName: 'Anonymous'
+        anonymousName: 'Anonymous',
+        favoriteStickers: []
     },
 
     mutations: {
@@ -22,12 +23,24 @@ export default {
             localStorage.setItem('user/name', data.name);
             localStorage.setItem('user/jwt', data.jwt);
             localStorage.setItem('user/isAdmin', data.isAdmin);
-            localStorage.setItem('user/moderators', data.moderators);
+            localStorage.setItem('user/moderators', JSON.stringify(data.moderators));
         },
 
         setAnonymousName(state, name) {
             state.anonymousName = name;
             localStorage.setItem('user/anonymousName', name);
+        },
+
+        addFavoriteStickers(state, stickerUrl) {
+            if (!state.favoriteStickers.includes(stickerUrl)) {
+                state.favoriteStickers.push(stickerUrl);
+                localStorage.setItem('user/favoriteStickers', JSON.stringify(state.favoriteStickers));
+            }
+        },
+
+        removeFavoriteStickers(state, stickerUrl) {
+            state.favoriteStickers = state.favoriteStickers.filter((url) => url !== stickerUrl);
+            localStorage.setItem('user/favoriteStickers', JSON.stringify(state.favoriteStickers));
         },
 
         disconnect(state) {
@@ -47,7 +60,7 @@ export default {
         loadFromLocalStorage(state) {
             const userId = localStorage.getItem('user/userId');
             if (userId !== null) {
-                state.userId = userId;
+                state.userId = parseInt(userId);
             }
 
             const name = localStorage.getItem('user/name');
@@ -62,17 +75,22 @@ export default {
 
             const isAdmin = localStorage.getItem('user/isAdmin');
             if (isAdmin !== null) {
-                state.isAdmin = isAdmin;
+                state.isAdmin = JSON.parse(isAdmin);
             }
 
             const moderators = localStorage.getItem('user/moderators');
             if (moderators !== null) {
-                state.moderators = moderators;
+                state.moderators = JSON.parse(moderators);
             }
 
             const anonymousName = localStorage.getItem('user/anonymousName');
             if (anonymousName !== null) {
                 state.anonymousName = anonymousName;
+            }
+
+            const favoriteStickers = localStorage.getItem('user/favoriteStickers');
+            if (favoriteStickers !== null) {
+                state.favoriteStickers = JSON.parse(favoriteStickers);
             }
         }
     }

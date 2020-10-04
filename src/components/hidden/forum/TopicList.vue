@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-simple-table v-if="!$vuetify.breakpoint.mobile" dense id="forum-table">
+        <v-simple-table id="forum-table" v-if="!$vuetify.breakpoint.mobile" dense>
             <template v-slot:default>
                 <thead>
                     <tr>
@@ -9,6 +9,9 @@
                         <th> AUTEUR </th>
                         <th> NB </th>
                         <th> DERNIER MSG </th>
+                        <th v-if="displayModerationTools">
+                            <!-- <v-checkbox dense /> -->
+                        </th>
                     </tr>
                 </thead>
 
@@ -40,7 +43,7 @@
                         </td>
 
                         <td>
-                            <a :href="`/#/forums/${forum.Id}/hidden/${topic.Topic.Id}`">
+                            <a :href="`/#/forums/${forum.Forum.Id}/hidden/${topic.Topic.Id}`">
                                 {{ topic.Topic.Title }}
                             </a>
                         </td>
@@ -56,12 +59,16 @@
                         <td>
                             {{ topic.LastPostDate | topicLastPostDate() }}
                         </td>
+
+                        <td v-if="displayModerationTools">
+                            <v-checkbox v-model="selectedTopics" :value="topic.Topic.Id" @change="$emit('input', selectedTopics)" dense />
+                        </td>
                     </tr>
                 </tbody>
             </template>
         </v-simple-table>
 
-        <v-list id="forum-list" v-if="this.$vuetify.breakpoint.mobile">
+        <v-list id="forum-list" v-if="this.$vuetify.breakpoint.mobile" dense>
             <v-list-item v-for="topic of topics" :key="topic.Id">
                 <v-list-item-icon>
                     <template v-if="topic.Topic.Pinned">
@@ -111,6 +118,8 @@
                 </v-list-item-content>
             </v-list-item>
         </v-list>
+
+        <v-divider />
     </div>
 </template>
 
@@ -119,8 +128,19 @@ export default {
     name: 'TopicList',
 
     props: {
+        value: { },
         forum: { required: true },
         topics: { required: true, type: Array }
+    },
+
+    data: () => ({
+        selectedTopics: []
+    }),
+
+    computed: {
+        displayModerationTools() {
+            return this.isAdmin;
+        }
     },
 
     methods: {

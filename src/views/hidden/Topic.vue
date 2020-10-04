@@ -9,19 +9,41 @@
                     </v-col>
                 </v-row>
 
-                <v-row class="px-4">
+                <v-row>
                     <v-col>
-                        <h2 class="primary--text"> {{ topic.Topic.Title }} </h2>
+                        <v-card outlined>
+                            <v-toolbar class="secondary elevation-0" dense>
+                                <v-toolbar-title>
+                                    {{ topic.Topic.Title }}
+                                </v-toolbar-title>
+                            </v-toolbar>
+                        </v-card>
+                    </v-col>
+                </v-row>
+
+                <v-row>
+                    <v-col lg="8" class="px-0 px-lg-3">
+                        <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" @input="fetchLogs()" />
                     </v-col>
                 </v-row>
 
                 <v-row>
                     <v-col cols="12" lg="8" class="px-0 px-lg-3">
-                        <v-row>
+                        <v-row class="post-list">
                             <v-col cols="12" v-for="post of topic.Posts" :key="post.Post.Id">
-                                <Post :post="post" />
+                                <Post class="post-card" :post="post" />
                             </v-col>
                         </v-row>
+
+                        <v-card class="mb-3" outlined>
+                            <v-toolbar class="elevation-0" dense>
+                                <v-toolbar-title>
+                                    Répondre
+                                </v-toolbar-title>
+                            </v-toolbar>
+                        </v-card>
+
+                        <TextEditor v-model="content" />
                     </v-col>
 
                     <v-col cols="12" lg="4">
@@ -29,7 +51,7 @@
                             <v-col>
                                 <TopicMenu class="mb-4" />
                                 <AnonymousMenu class="mb-4" />
-                                <ModeratorsMenu class="mb-4" />
+                                <ModeratorsMenu class="mb-4" :moderators="forum.Moderators" />
                             </v-col>
                         </v-row>
                     </v-col>
@@ -42,8 +64,10 @@
 <script>
 import TopicMenu from '../../components/hidden/topic/TopicMenu';
 import Post from '../../components/hidden/topic/Post';
-import AnonymousMenu from '../../components/forum/AnonymousMenu';
-import ModeratorsMenu from '../../components/forum/ModeratorsMenu';
+import AnonymousMenu from '../../components/hidden/forum/AnonymousMenu';
+import ModeratorsMenu from '../../components/hidden/forum/ModeratorsMenu';
+import TextEditor from '../../components/TextEditor';
+
 
 export default {
     name: 'HiddenTopic',
@@ -51,14 +75,43 @@ export default {
     components: {
         Post,
         TopicMenu,
+        TextEditor,
         AnonymousMenu,
         ModeratorsMenu
     },
 
     data: () => ({
         forum: null,
-        topic: null
+        topic: null,
+
+        page: 1,
+        postsCount: 0,
+
+        content: ''
     }),
+
+    computed: {
+        breadcrumbs() {
+            if (this.forum === null || this.topic === null) {
+                return [];
+            }
+
+            return [
+                { text: 'Forums', to: '/forums', exact: true },
+                { text: this.forum.Forum.Name, to: `/forums/${this.forum.Forum.Id}`, exact: true },
+                { text: 'Hidden', to: `/forums/${this.forum.Forum.Id}/hidden`, exact: true },
+                { text: this.topic.Topic.Title, to: `/forums/${this.forum.Forum.Id}/hidden/${this.topic.Topic.Id}`, exact: true }
+            ];
+        },
+
+        paginationLength() {
+            let length = Math.ceil(this.logsCount / this.limit);
+            if (length === 0 || isNaN(length)) {
+                length = 1;
+            }
+            return length;
+        }
+    },
 
     methods: {
         async fetchTopic() {
@@ -72,6 +125,7 @@ export default {
 
                 const { topic } = await this.repos.hidden.getTopic(this.$route.params.topicId, this.page);
                 this.topic = topic;
+                this.postsCount = this.topic.PostsCount;
             } catch (err) {
                 console.error(err);
             } finally {
@@ -80,23 +134,23 @@ export default {
         }
     },
 
-    computed: {
-        breadcrumbs() {
-            if (this.forum === null || this.topic === null) {
-                return [];
-            }
-
-            return [
-                { text: 'Forums', to: '/forums', exact: true },
-                { text: this.forum.Name, to: `/forums/${this.forum.Id}`, exact: true },
-                { text: 'Hidden', to: `/forums/${this.forum.Id}/hidden`, exact: true },
-                { text: this.topic.Topic.Title, to: `/forums/${this.forum.Id}/hidden/${this.topic.Topic.Id}`, exact: true }
-            ];
-        }
-    },
-
     created() {
         this.fetchTopic();
     }
 };
 </script>
+
+<style lang="scss" scoped>
+.post-list {
+    div:nth-child(odd) {
+        .post-card {
+            background-color: #181a1b;
+        }
+    }
+    div:nth-child(even) {
+        .post-card {
+            background-color: #1e2021;
+        }
+    }
+}
+</style>

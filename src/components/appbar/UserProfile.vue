@@ -24,7 +24,7 @@
 
             <v-divider />
 
-            <v-list-item class="py-2" @click="disconnect()">
+            <v-list-item class="py-2" to="/account">
                 <v-list-item-action>
                     <v-icon small> fas fa-user </v-icon>
                 </v-list-item-action>

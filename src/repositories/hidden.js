@@ -22,6 +22,10 @@ class ForumRepository extends Repository {
     async createTopic(forumId, title, content, username) {
         return await this.post('hidden/topics', { forumId, title, content, username });
     }
+
+    async moderation(action, ids) {
+        return await this.post('hidden/moderation/topics', { action, ids });
+    }
 }
 
 export default new ForumRepository();

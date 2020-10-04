@@ -33,11 +33,18 @@
 
         <v-spacer />
 
-        <v-icon class="mr-4" small> fas fa-question-circle </v-icon>
+        <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+                <a href="https://github.com/Hidden-JVC/hidden-jvc-extension" target="_blank">
+                    <v-icon class="mr-4" v-on="on" small> fab fa-github </v-icon>
+                </a>
+            </template>
+            Répo github
+        </v-tooltip>
 
-        <v-badge :content="6" class="mr-6">
+        <!-- <v-badge :content="6" class="mr-6">
             <v-icon class="mr-2" small> fas fa-bell </v-icon>
-        </v-badge>
+        </v-badge> -->
 
         <UserLogin v-if="$store.state.user.userId === null" />
         <UserProfile v-if="$store.state.user.userId !== null" />

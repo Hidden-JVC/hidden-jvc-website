@@ -8,14 +8,14 @@
                     </v-col>
                 </v-row>
 
-                <v-row class="px-4">
-                    <v-col>
-                        <h2 class="primary--text"> Forum {{ forum.Name }} </h2>
-                    </v-col>
-                </v-row>
-
                 <v-row>
                     <v-col cols="12" md="8" class="px-0 px-lg-3">
+                        <v-row class="px-4">
+                            <v-col class="text-center">
+                                <h2 class="primary--text"> Forum {{ forum.Forum.Name }} </h2>
+                            </v-col>
+                        </v-row>
+
                         <v-row class="px-4" align="center">
                             <v-col cols="12" md="3">
                                 <v-btn color="primary" block small> Nouveau sujet </v-btn>
@@ -26,31 +26,33 @@
                             </v-col>
 
                             <v-col cols="12" md="3" class="text-right">
-                                <v-btn class="secondary" block small> Actualiser </v-btn>
+                                <v-btn @click="fetchTopics()" class="secondary" block small> Actualiser </v-btn>
                             </v-col>
                         </v-row>
 
-                        <TopicList :forum="forum" :topics="topics" />
+                        <v-row v-if="displayModerationTools">
+                            <v-col offset="3" cols="6">
+                                <v-select v-model="moderationAction" :items="moderationSelect" menu-props="offsetY" outlined dense>
+                                    <template v-slot:append-outer>
+                                        <v-btn @click="submitModerationAction()" color="secondary" small>
+                                            Valider
+                                        </v-btn>
+                                    </template>
+                                </v-select>
+                            </v-col>
+                        </v-row>
+
+                        <TopicList v-model="selectedTopics" :forum="forum" :topics="topics" />
 
                         <CreateTopicForm />
                     </v-col>
 
                     <v-col cols="12" md="4">
-                        <!-- <v-card class="mb-4" outlined>
-                            <v-card-title class="subtitle-2 pa-2" style="background-color: #303436;">
-                                Larry
-                            </v-card-title>
-
-                            <v-card-text class="pa-0" style="background-color: #444a4d;">
-                                <v-img src="@/assets/larry.png" />
-                            </v-card-text>
-                        </v-card> -->
-
                         <ForumMenu class="mb-4" />
 
                         <AnonymousMenu class="mb-4" />
 
-                        <ModeratorsMenu class="mb-4" />
+                        <ModeratorsMenu class="mb-4" :moderators="forum.Moderators" />
                     </v-col>
                 </v-row>
             </v-card>
@@ -59,12 +61,12 @@
 </template>
 
 <script>
-import ForumMenu from '../components/forum/ForumMenu';
-import AnonymousMenu from '../components/forum/AnonymousMenu';
-import ModeratorsMenu from '../components/forum/ModeratorsMenu';
+import ForumMenu from '../components/hidden/forum/ForumMenu';
+import AnonymousMenu from '../components/hidden/forum/AnonymousMenu';
+import ModeratorsMenu from '../components/hidden/forum/ModeratorsMenu';
 
-import CreateTopicForm from '../components/forum/CreateTopicForm';
-import TopicList from '../components/forum/TopicList';
+import CreateTopicForm from '../components/hidden/forum/CreateTopicForm';
+import TopicList from '../components/hidden/forum/TopicList';
 
 export default {
     name: 'Forum',
@@ -91,7 +93,19 @@ export default {
             { text: 'Sujet', value: 'Title' },
             { text: 'Nombre de posts', value: 'postsCount' },
             { text: 'Dernier message', value: 'lastPostDate' }
-        ]
+        ],
+
+        moderationAction: null,
+
+        moderationSelect: [
+            { value: 'Lock', text: 'Lock' },
+            { value: 'UnLock', text: 'Délock' },
+            { value: 'Pin', text: 'Epingler' },
+            { value: 'UnPin', text: 'Désépingler' },
+            { value: 'DeleteTopic', text: 'Supprimer' }
+        ],
+
+        selectedTopics: []
     }),
 
     methods: {
@@ -110,6 +124,31 @@ export default {
 
             this.setLoading(false);
             this.loading = false;
+        },
+
+        async submitModerationAction() {
+            try {
+                this.setLoading(true);
+
+                if (this.selectedTopics.length === 0) {
+                    return;
+                }
+
+                if (this.moderationAction === null) {
+                    return;
+                }
+
+                const { success } = await this.repos.hidden.moderation(this.moderationAction, this.selectedTopics);
+                if (success) {
+                    await this.fetchTopics();
+                } else {
+                    throw new Error('api error');
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                this.setLoading(false);
+            }
         }
     },
 
@@ -121,8 +160,8 @@ export default {
 
             return [
                 { text: 'Forums', to: '/forums', exact: true },
-                { text: this.forum.Name, to: `/forums/${this.forum.Id}`,exact: true },
-                { text: 'Hidden', to: `/forums/${this.forum.Id}/hidden`,exact: true }
+                { text: this.forum.Forum.Name, to: `/forums/${this.forum.Forum.Id}`, exact: true },
+                { text: 'Hidden', to: `/forums/${this.forum.Id}/hidden`, exact: true }
             ];
         },
 
@@ -132,6 +171,10 @@ export default {
                 length = 1;
             }
             return length;
+        },
+
+        displayModerationTools() {
+            return this.isAdmin;
         }
     },
 
