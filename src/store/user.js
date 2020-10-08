@@ -11,6 +11,33 @@ export default {
         favoriteStickers: []
     },
 
+    // const state = {
+    //     user: {
+    //         jwt: null,
+    //         userId: null,
+    //         isAdmin: false,
+    //         moderators: [],
+    //         anonymousName: 'Anonymous',
+    //         registeredName: null
+    //     }
+    // };
+
+    getters: {
+        isModeratorOnForum: (state) => (forumId) => {
+            return state.moderators.filter((m) => m.ForumId === forumId).length === 1;
+        },
+
+        hasRightOnForum: (state) => (forumId, action) => {
+            const moderator = state.moderators.find((m) => m.ForumId === forumId);
+            console.log(forumId);
+            if (!moderator) {
+                return false;
+            }
+
+            return moderator.Actions.includes(action);
+        }
+    },
+
     mutations: {
         setUser(state, data) {
             state.userId = data.userId;

@@ -25,7 +25,7 @@
                     <v-list-item>
                         <v-list-item-content>
                             <ValidationProvider v-slot="{ errors }" name="Mot de passe" rules="required">
-                                <v-text-field v-model="password" label="Mot de passe" @keydown.enter="login()" :error-messages="errors" outlined dense />
+                                <v-text-field v-model="password" label="Mot de passe" @keydown.enter="login()" :error-messages="errors" outlined dense type="password" />
                             </ValidationProvider>
                         </v-list-item-content>
                     </v-list-item>

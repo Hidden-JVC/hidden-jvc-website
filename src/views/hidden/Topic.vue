@@ -23,7 +23,7 @@
 
                 <v-row>
                     <v-col lg="8" class="px-0 px-lg-3">
-                        <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" @input="fetchLogs()" />
+                        <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" @input="fetchTopic()" />
                     </v-col>
                 </v-row>
 
@@ -31,7 +31,13 @@
                     <v-col cols="12" lg="8" class="px-0 px-lg-3">
                         <v-row class="post-list">
                             <v-col cols="12" v-for="post of topic.Posts" :key="post.Post.Id">
-                                <Post class="post-card" :post="post" />
+                                <Post class="post-card" :post="post" :topic="topic" v-on:quote="quote" v-on:reloadTopic="fetchTopic()" />
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col class="px-0 px-lg-3">
+                                <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" @input="fetchTopic()" />
                             </v-col>
                         </v-row>
 
@@ -43,7 +49,11 @@
                             </v-toolbar>
                         </v-card>
 
-                        <TextEditor v-model="content" />
+                        <TextEditor ref="textEditor" v-model="content" />
+
+                        <v-btn @click="createPost()" color="primary" small>
+                            Répondre
+                        </v-btn>
                     </v-col>
 
                     <v-col cols="12" lg="4">
@@ -68,7 +78,6 @@ import AnonymousMenu from '../../components/hidden/forum/AnonymousMenu';
 import ModeratorsMenu from '../../components/hidden/forum/ModeratorsMenu';
 import TextEditor from '../../components/TextEditor';
 
-
 export default {
     name: 'HiddenTopic',
 
@@ -85,6 +94,7 @@ export default {
         topic: null,
 
         page: 1,
+        limit: 20,
         postsCount: 0,
 
         content: ''
@@ -105,7 +115,7 @@ export default {
         },
 
         paginationLength() {
-            let length = Math.ceil(this.logsCount / this.limit);
+            let length = Math.ceil(this.postsCount / this.limit);
             if (length === 0 || isNaN(length)) {
                 length = 1;
             }
@@ -131,6 +141,29 @@ export default {
             } finally {
                 this.setLoading(false);
             }
+        },
+
+        async createPost() {
+            try {
+                this.setLoading(true);
+
+                const topicId = parseInt(this.$route.params.topicId);
+                await this.repos.hidden.createPost(topicId, this.content, this.$store.state.user.anonymousName);
+                this.fetchTopic();
+            } catch (err) {
+                console.error(err);
+            } finally {
+                this.setLoading(false);
+            }
+        },
+
+        quote(post) {
+            const name = post.User ? post.User.Name : post.Post.Username;
+            let content = `\n> Le ${this.$options.filters.postDate(post.Post.CreationDate)} ${name} a écrit: \n> `;
+            content += post.Post.Content.split('\n').join('\n> ');
+            content += '\n\n';
+
+            this.$refs.textEditor.appendText(content);
         }
     },
 

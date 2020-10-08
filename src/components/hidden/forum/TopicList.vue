@@ -128,20 +128,15 @@ export default {
     name: 'TopicList',
 
     props: {
-        value: { },
+        value: {},
         forum: { required: true },
-        topics: { required: true, type: Array }
+        topics: { required: true, type: Array },
+        displayModerationTools: { require: true, type: Boolean }
     },
 
     data: () => ({
         selectedTopics: []
     }),
-
-    computed: {
-        displayModerationTools() {
-            return this.isAdmin;
-        }
-    },
 
     methods: {
         getUserClass(user) {

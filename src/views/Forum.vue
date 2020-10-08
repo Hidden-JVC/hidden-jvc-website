@@ -42,7 +42,7 @@
                             </v-col>
                         </v-row>
 
-                        <TopicList v-model="selectedTopics" :forum="forum" :topics="topics" />
+                        <TopicList v-model="selectedTopics" :forum="forum" :topics="topics" :displayModerationTools="displayModerationTools" />
 
                         <CreateTopicForm />
                     </v-col>
@@ -96,15 +96,6 @@ export default {
         ],
 
         moderationAction: null,
-
-        moderationSelect: [
-            { value: 'Lock', text: 'Lock' },
-            { value: 'UnLock', text: 'Délock' },
-            { value: 'Pin', text: 'Epingler' },
-            { value: 'UnPin', text: 'Désépingler' },
-            { value: 'DeleteTopic', text: 'Supprimer' }
-        ],
-
         selectedTopics: []
     }),
 
@@ -173,8 +164,34 @@ export default {
             return length;
         },
 
+        moderationSelect() {
+            const list = [];
+
+            if (this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'Lock')) {
+                list.push({ value: 'Lock', text: 'Lock' });
+            }
+
+            if (this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'UnLock')) {
+                list.push({ value: 'UnLock', text: 'Délock' });
+            }
+
+            if (this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'Pin')) {
+                list.push({ value: 'Pin', text: 'Epingler' });
+            }
+
+            if (this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'UnPin')) {
+                list.push({ value: 'UnPin', text: 'Désépingler' });
+            }
+
+            if (this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'DeleteTopic')) {
+                list.push({ value: 'DeleteTopic', text: 'Supprimer' });
+            }
+
+            return list;
+        },
+
         displayModerationTools() {
-            return this.isAdmin;
+            return this.isAdmin || this.$store.getters['user/isModeratorOnForum'](51);
         }
     },
 

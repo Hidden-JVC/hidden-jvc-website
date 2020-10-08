@@ -109,12 +109,14 @@ export default {
         value: { type: String, required: true }
     },
 
-    data: () => ({
-        content: '',
-        risibankTab: 1,
-        risibank: null,
-        showRisibank: true
-    }),
+    data() {
+        return {
+            content: this.value,
+            risibankTab: 1,
+            risibank: null,
+            showRisibank: true
+        };
+    },
 
     computed: {
         stickers() {
@@ -158,6 +160,10 @@ export default {
             // });
             // const result = await response.json();
             // this.stickers = result.stickers;
+        },
+
+        appendText(text) {
+            this.content += text;
         },
 
         addSticker(stickerUrl) {

@@ -23,6 +23,14 @@ class ForumRepository extends Repository {
         return await this.post('hidden/topics', { forumId, title, content, username });
     }
 
+    async createPost(topicId, content, username) {
+        return await this.post(`hidden/topics/${topicId}`, { topicId, content, username });
+    }
+
+    async updatePost(topicId, postId, data) {
+        return await this.post(`hidden/topics/${topicId}/${postId}`, data);
+    }
+
     async moderation(action, ids) {
         return await this.post('hidden/moderation/topics', { action, ids });
     }
