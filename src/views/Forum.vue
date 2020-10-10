@@ -129,7 +129,7 @@ export default {
                     return;
                 }
 
-                const { success } = await this.repos.hidden.moderation(this.moderationAction, this.selectedTopics);
+                const { success } = await this.repos.hidden.topicsModeration(this.moderationAction, this.selectedTopics);
                 if (success) {
                     await this.fetchTopics();
                 } else {
@@ -152,7 +152,7 @@ export default {
             return [
                 { text: 'Forums', to: '/forums', exact: true },
                 { text: this.forum.Forum.Name, to: `/forums/${this.forum.Forum.Id}`, exact: true },
-                { text: 'Hidden', to: `/forums/${this.forum.Id}/hidden`, exact: true }
+                { text: 'Hidden', to: `/forums/${this.forum.Forum.Id}/hidden`, exact: true }
             ];
         },
 

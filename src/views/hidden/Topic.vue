@@ -31,7 +31,7 @@
                     <v-col cols="12" lg="8" class="px-0 px-lg-3">
                         <v-row class="post-list">
                             <v-col cols="12" v-for="post of topic.Posts" :key="post.Post.Id">
-                                <Post class="post-card" :post="post" :topic="topic" v-on:quote="quote" v-on:reloadTopic="fetchTopic()" />
+                                <Post class="post-card" :post="post" :topic="topic" :forum="forum" v-on:quote="quote" v-on:reloadTopic="fetchTopic()" />
                             </v-col>
                         </v-row>
 

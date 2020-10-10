@@ -60,13 +60,29 @@
                         <v-tab> Recherche </v-tab>
                     </v-tabs>
 
+                    <v-expand-transition>
+                        <div v-show="risibankTab === 5">
+                            <v-divider />
+
+                            <v-row class="px-3">
+                                <v-col>
+                                    <v-text-field v-model="risibankSearch" @keydown.enter="fetchRisibankSearch()" outlined hide-details dense>
+                                        <template v-slot:append-outer>
+                                            <v-btn color="secondary" @click="fetchRisibankSearch()" small> Rechercher </v-btn>
+                                        </template>
+                                    </v-text-field>
+                                </v-col>
+                            </v-row>
+                        </div>
+                    </v-expand-transition>
+
                     <v-divider />
 
                     <v-row class="mx-0 stickers-container">
-                        <v-col v-for="sticker of stickers" :key="sticker.id" cols="3" lg="2" class="text-center">
+                        <v-col v-for="sticker of stickers" :key="sticker.id" cols="3" lg="2">
                             <v-hover v-slot:default="{ hover }">
                                 <div>
-                                    <v-img v-if="risibankTab === 0" :src="sticker" width="70" height="55" @click.passive="addSticker(sticker)">
+                                    <v-img v-if="risibankTab === 0" :src="sticker" width="70" height="55" @click.passive="addSticker(sticker)" class="mx-auto">
                                         <v-row v-show="hover" align="end" class="fill-height">
                                             <v-col class="pb-0 mr-1 text-right">
                                                 <v-icon @click.stop="removeSticker(sticker)" color="red" small> fas fa-trash </v-icon>
@@ -74,7 +90,7 @@
                                         </v-row>
                                     </v-img>
 
-                                    <v-img v-if="risibankTab !== 0" :src="sticker.risibank_link" width="70" height="55" @click.passive="addSticker(sticker.risibank_link)">
+                                    <v-img v-if="risibankTab !== 0" :src="sticker.risibank_link" width="70" height="55" @click.passive="addSticker(sticker.risibank_link)" class="mx-auto">
                                         <v-row v-show="hover" align="end" class="fill-height">
                                             <v-col class="pb-0 mr-1 text-right">
                                                 <v-icon @click.stop="saveSticker(sticker)" color="yellow" small> fas fa-star </v-icon>
@@ -112,9 +128,11 @@ export default {
     data() {
         return {
             content: this.value,
-            risibankTab: 1,
+            risibankTab: 1, // favorite tab
             risibank: null,
-            showRisibank: true
+            showRisibank: true,
+            risibankSearchResult: null,
+            risibankSearch: ''
         };
     },
 
@@ -135,7 +153,7 @@ export default {
                     case 4:
                         return this.risibank.trending;
                     case 5:
-                        return [];
+                        return this.risibankSearchResult;
                     default:
                         return [];
                 }
@@ -152,14 +170,24 @@ export default {
             const response = await fetch('https://api.risibank.fr/api/v0/load');
             const result = await response.json();
             this.risibank = result.stickers;
+        },
 
-            // const response = await fetch('https://api.risibank.fr/api/v0/search', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ search: 'jesus' })
-            // });
-            // const result = await response.json();
-            // this.stickers = result.stickers;
+        async fetchRisibankSearch() {
+            try {
+                this.setLoading(true);
+
+                const response = await fetch('https://api.risibank.fr/api/v0/search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ search: this.risibankSearch })
+                });
+                const result = await response.json();
+                this.risibankSearchResult = result.stickers;
+            } catch (err) {
+                console.error(err);
+            } finally {
+                this.setLoading(false);
+            }
         },
 
         appendText(text) {
@@ -177,7 +205,6 @@ export default {
                 // const selected = textarea.value.substring(start, end);
                 const after = textarea.value.substring(end, textarea.value.length);
 
-
                 this.content = `${before} ${stickerUrl} ${after}`;
 
                 setTimeout(() => {
@@ -185,12 +212,12 @@ export default {
                     const cursorPosition = before.length + stickerUrl.length + 1;
                     textarea.setSelectionRange(cursorPosition, cursorPosition);
                 }, 0);
-
-
             } else {
                 this.content += stickerUrl;
                 textarea.focus();
             }
+
+            this.$emit('input', this.content);
         },
 
         saveSticker(sticker) {
@@ -204,6 +231,11 @@ export default {
 
     created() {
         this.fetchRisibank();
+
+        // display favorite stickers by default if there's is at least one
+        if (this.$store.state.user.favoriteStickers.length > 0) {
+            this.risibankTab = 0;
+        }
     }
 };
 </script>

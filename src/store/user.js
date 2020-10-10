@@ -29,7 +29,6 @@ export default {
 
         hasRightOnForum: (state) => (forumId, action) => {
             const moderator = state.moderators.find((m) => m.ForumId === forumId);
-            console.log(forumId);
             if (!moderator) {
                 return false;
             }

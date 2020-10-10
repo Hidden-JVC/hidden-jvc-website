@@ -8,7 +8,7 @@
 
             <span>
                 <span :class="getUserClass(post.User)">
-                    {{ getPostAuthorName(post) }}
+                    {{ getPostAuthorName() }}
                 </span>
                 <br>
                 <span class="caption grey--text">
@@ -27,7 +27,7 @@
 
             <v-tooltip top>
                 <template v-slot:activator="{ on }">
-                    <v-icon v-if="showPin(post)" :color="post.Post.Pinned ? 'red' : 'green'" @click="pin(post)" class="ml-4" x-small v-on="on">
+                    <v-icon v-if="showPin(post)" :color="post.Post.Pinned ? 'red' : 'green'" @click="pin()" class="ml-4" x-small v-on="on">
                         fas fa-thumbtack
                     </v-icon>
                 </template>
@@ -36,7 +36,7 @@
 
             <v-tooltip top>
                 <template v-slot:activator="{ on }">
-                    <v-icon v-if="showEdit(post)" @click="toggleEdit(post)" class="ml-4" x-small v-on="on">
+                    <v-icon v-if="showEdit()" @click="toggleEdit()" class="ml-4" color="blue" x-small v-on="on">
                         fas fa-edit
                     </v-icon>
                 </template>
@@ -45,13 +45,12 @@
 
             <v-tooltip top>
                 <template v-slot:activator="{ on }">
-                    <v-icon v-if="canDelete" @click="deletePost(post)" color="red" x-small v-on="on">
+                    <v-icon v-if="showDelete()" @click="deletePost()" class="ml-4" color="red" x-small v-on="on">
                         fas fa-trash
                     </v-icon>
                 </template>
-                Modifier
+                Supprimer
             </v-tooltip>
-
         </v-card-title>
 
         <v-divider />
@@ -102,7 +101,8 @@ export default {
 
     props: {
         post: { required: true },
-        topic: { required: true }
+        topic: { required: true },
+        forum: { required: true }
     },
 
     data() {
@@ -113,22 +113,28 @@ export default {
     },
 
     computed: {
-        canDelete() {
-            return this.isAdmin;
+        isPostMadeByConnectedUser() {
+            return this.post.User && this.post.User.Id === this.$store.state.user.userId;
         }
     },
 
     methods: {
-        showPin(post) {
-            return !post.Post.Op && (this.isAdmin || (this.topic.Author && this.$store.state.user.userId === this.topic.Author.Id));
+        showPin() {
+            return !this.post.Post.Op && (this.topic.Author && this.$store.state.user.userId === this.topic.Author.Id);
         },
 
-        showEdit(post) {
-            return post.User && post.User.Id === this.$store.state.user.userId;
+        showEdit() {
+            return this.isPostMadeByConnectedUser;
         },
 
-        quote(post) {
-            this.$emit('quote', post);
+        showDelete() {
+            return this.isAdmin
+                || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'DeletePost')
+                || this.isPostMadeByConnectedUser;
+        },
+
+        quote() {
+            this.$emit('quote', this.post);
         },
 
         toggleEdit() {
@@ -153,15 +159,29 @@ export default {
             }
         },
 
-        deletePost(post) {
-            console.log(post);
-        },
-
-        async pin(post) {
+        async deletePost() {
             try {
                 this.setLoading(true);
 
-                const { success } = await this.repos.hidden.updatePost(this.topic.Topic.Id, post.Post.Id, { pinned: !post.Post.Pinned });
+                const { success } = await this.repos.hidden.postsModeration('DeletePost', [this.post.Post.Id], { content: this.editContent });
+                if (success) {
+                    this.editMode = false;
+                    this.$emit('reloadTopic');
+                } else {
+                    throw new Error('api error');
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                this.setLoading(false);
+            }
+        },
+
+        async pin() {
+            try {
+                this.setLoading(true);
+
+                const { success } = await this.repos.hidden.updatePost(this.topic.Topic.Id, this.post.Post.Id, { pinned: !this.post.Post.Pinned });
                 if (success) {
                     this.$emit('reloadTopic');
                 } else {
@@ -186,11 +206,11 @@ export default {
             }
         },
 
-        getPostAuthorName(post) {
-            if (post.User !== null) {
-                return post.User.Name;
+        getPostAuthorName() {
+            if (this.post.User !== null) {
+                return this.post.User.Name;
             } else {
-                return post.Post.Username;
+                return this.post.Post.Username;
             }
         },
 
