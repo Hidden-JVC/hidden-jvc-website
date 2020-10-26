@@ -74,7 +74,7 @@ export default {
             state.name = null;
             state.jwt = null;
             state.isAdmin = null;
-            state.moderators = null;
+            state.moderators = [];
 
             localStorage.removeItem('user/userId');
             localStorage.removeItem('user/name');

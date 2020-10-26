@@ -1,5 +1,27 @@
 <template>
     <v-card :class="{ 'pinned': post.Post.Pinned }" outlined>
+        <v-row class="px-3">
+            <v-col>
+                <v-btn v-if="showBanAccount && !post.User.Banned" @click="banAccount(true)" class="mr-4" color="red" small>
+                    Ban
+                </v-btn>
+
+                <v-btn v-if="showBanAccount && post.User.Banned" @click="banAccount(false)" class="mr-4" color="orange" small>
+                    Déban
+                </v-btn>
+
+                <v-btn v-if="showBanIp && !post.User.IpBanned" @click="banIp(true)" class="mr-4" color="red" small>
+                    Ban IP
+                </v-btn>
+
+                <v-btn v-if="showBanIp && post.User.IpBanned" @click="banIp(false)" class="mr-4" color="red" small>
+                    Déban IP
+                </v-btn>
+            </v-col>
+        </v-row>
+
+        <v-divider />
+
         <v-card-title class="py-0">
             <span class="mr-4">
                 <v-img v-if="post.User === null || post.User.ProfilePicture === null" src="@/assets/larry.png" width="40" height="40" />
@@ -16,6 +38,7 @@
                 </span>
             </span>
 
+            <!-- Quote -->
             <v-tooltip top>
                 <template v-slot:activator="{ on }">
                     <v-icon @click="quote(post)" class="ml-4 ml-auto" x-small v-on="on">
@@ -25,27 +48,30 @@
                 Citer
             </v-tooltip>
 
+            <!-- Pin -->
             <v-tooltip top>
                 <template v-slot:activator="{ on }">
-                    <v-icon v-if="showPin(post)" :color="post.Post.Pinned ? 'red' : 'green'" @click="pin()" class="ml-4" x-small v-on="on">
+                    <v-icon v-if="showPin" :color="post.Post.Pinned ? 'red' : 'green'" @click="pin()" class="ml-4" x-small v-on="on">
                         fas fa-thumbtack
                     </v-icon>
                 </template>
                 {{ post.Post.Pinned ? 'Désépingler' : 'Épingler' }}
             </v-tooltip>
 
+            <!-- Edit -->
             <v-tooltip top>
                 <template v-slot:activator="{ on }">
-                    <v-icon v-if="showEdit()" @click="toggleEdit()" class="ml-4" color="blue" x-small v-on="on">
+                    <v-icon v-if="showEdit" @click="toggleEdit()" class="ml-4" color="blue" x-small v-on="on">
                         fas fa-edit
                     </v-icon>
                 </template>
                 Modifier
             </v-tooltip>
 
+            <!-- Delete -->
             <v-tooltip top>
                 <template v-slot:activator="{ on }">
-                    <v-icon v-if="showDelete()" @click="deletePost()" class="ml-4" color="red" x-small v-on="on">
+                    <v-icon v-if="showDelete" @click="deletePost()" class="ml-4" color="red" x-small v-on="on">
                         fas fa-trash
                     </v-icon>
                 </template>
@@ -59,8 +85,12 @@
             <v-col>
                 <TextEditor v-model="editContent" />
 
-                <v-btn @click="edit()" color="primary">
+                <v-btn @click="edit()" color="primary" small>
                     Modifier
+                </v-btn>
+
+                <v-btn @click="editMode = false" color="secondary" class="float-right" small>
+                    Annuler
                 </v-btn>
             </v-col>
         </v-row>
@@ -114,13 +144,22 @@ export default {
 
     computed: {
         isPostMadeByConnectedUser() {
-            return this.post.User && this.post.User.Id === this.$store.state.user.userId;
-        }
-    },
+            return this.post.User !== null && this.post.User.Id === this.$store.state.user.userId;
+        },
 
-    methods: {
+        showBanAccount() {
+            return this.isAdmin
+                || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'BanAccount');
+        },
+
+        showBanIp() {
+            return this.isAdmin
+                || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'BanIp');
+        },
+
         showPin() {
-            return !this.post.Post.Op && (this.topic.Author && this.$store.state.user.userId === this.topic.Author.Id);
+            return !this.post.Post.Op // can't pin first post
+                && (this.topic.Author && this.topic.Author.Id === this.$store.state.user.userId); // author can pin posts
         },
 
         showEdit() {
@@ -129,10 +168,12 @@ export default {
 
         showDelete() {
             return this.isAdmin
-                || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'DeletePost')
+                || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'Delete')
                 || this.isPostMadeByConnectedUser;
-        },
+        }
+    },
 
+    methods: {
         quote() {
             this.$emit('quote', this.post);
         },
@@ -163,7 +204,7 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { success } = await this.repos.hidden.postsModeration('DeletePost', [this.post.Post.Id], { content: this.editContent });
+                const { success } = await this.repos.hidden.postsModeration('Delete', [this.post.Post.Id]);
                 if (success) {
                     this.editMode = false;
                     this.$emit('reloadTopic');
@@ -183,6 +224,42 @@ export default {
 
                 const { success } = await this.repos.hidden.updatePost(this.topic.Topic.Id, this.post.Post.Id, { pinned: !this.post.Post.Pinned });
                 if (success) {
+                    this.$emit('reloadTopic');
+                } else {
+                    throw new Error('api error');
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                this.setLoading(false);
+            }
+        },
+
+        async banAccount(ban) {
+            try {
+                this.setLoading(true);
+
+                const { success } = await this.repos.hidden.postsModeration(ban ? 'BanAccount' : 'UnBanAccount', [this.post.Post.Id]);
+                if (success) {
+                    this.editMode = false;
+                    this.$emit('reloadTopic');
+                } else {
+                    throw new Error('api error');
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                this.setLoading(false);
+            }
+        },
+
+        async banIp(ban) {
+            try {
+                this.setLoading(true);
+
+                const { success } = await this.repos.hidden.postsModeration(ban ? 'BanIp' : 'UnBanIp', [this.post.Post.Id]);
+                if (success) {
+                    this.editMode = false;
                     this.$emit('reloadTopic');
                 } else {
                     throw new Error('api error');

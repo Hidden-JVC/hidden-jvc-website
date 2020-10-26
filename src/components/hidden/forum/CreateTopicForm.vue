@@ -82,7 +82,7 @@ export default {
 
                 this.setLoading(true);
                 const forumId = parseInt(this.$route.params.forumId);
-                const { topicId, error } = await this.repos.hidden.createTopic(forumId, this.title, this.content, this.$store.state.user.anonymousName);
+                const { topicId, error } = await this.repos.hidden.createTopic(forumId, this.title, this.content.trim(), this.$store.state.user.anonymousName);
                 if (error) {
                     throw new Error(error);
                 }

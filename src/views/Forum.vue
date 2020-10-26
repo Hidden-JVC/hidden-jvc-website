@@ -183,8 +183,8 @@ export default {
                 list.push({ value: 'UnPin', text: 'Désépingler' });
             }
 
-            if (this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'DeleteTopic')) {
-                list.push({ value: 'DeleteTopic', text: 'Supprimer' });
+            if (this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'Delete')) {
+                list.push({ value: 'Delete', text: 'Supprimer' });
             }
 
             return list;
