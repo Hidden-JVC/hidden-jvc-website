@@ -1,6 +1,6 @@
 <template>
     <v-card :class="{ 'pinned': post.Post.Pinned }" outlined>
-        <v-row class="px-3">
+        <v-row class="px-3" v-if="showBanAccount || showBanIp">
             <v-col>
                 <v-btn v-if="showBanAccount && !post.User.Banned" @click="banAccount(true)" class="mr-4" color="red" small>
                     Ban
@@ -20,7 +20,7 @@
             </v-col>
         </v-row>
 
-        <v-divider />
+        <v-divider v-if="showBanAccount || showBanIp" />
 
         <v-card-title class="py-0">
             <span class="mr-4">

@@ -2,7 +2,7 @@
     <v-row v-if="forum !== null" justify="center" no-gutters>
         <v-col cols="12" lg="9">
             <v-card class="pa-0 px-lg-4" outlined>
-                <v-row class="px-4">
+                <v-row>
                     <v-col>
                         <v-breadcrumbs class="pa-0" :items="breadcrumbs" />
                     </v-col>
@@ -10,15 +10,22 @@
 
                 <v-row>
                     <v-col cols="12" md="8" class="px-0 px-lg-3">
-                        <v-row class="px-4">
-                            <v-col class="text-center">
-                                <h2 class="primary--text"> Forum {{ forum.Forum.Name }} </h2>
+                        <v-row>
+                            <v-col class="pt-0">
+                                <v-card outlined>
+                                    <v-toolbar class="elevation-0" dense style="background-color: #303436;">
+                                        <v-toolbar-title>
+                                            Forum {{ forum.Forum.Name }}
+                                        </v-toolbar-title>
+                                    </v-toolbar>
+                                </v-card>
+                                <!-- <h2 class="primary--text"> Forum {{ forum.Forum.Name }} </h2> -->
                             </v-col>
                         </v-row>
 
-                        <v-row class="px-4" align="center">
+                        <v-row align="center">
                             <v-col cols="12" md="3">
-                                <v-btn color="primary" block small> Nouveau sujet </v-btn>
+                                <v-btn @click="focusNewTopic()" color="primary" block small> Nouveau sujet </v-btn>
                             </v-col>
 
                             <v-col cols="12" md="6">
@@ -44,15 +51,15 @@
 
                         <TopicList v-model="selectedTopics" :forum="forum" :topics="topics" :displayModerationTools="displayModerationTools" />
 
-                        <CreateTopicForm />
+                        <CreateTopicForm ref="createTopicForm" />
                     </v-col>
 
                     <v-col cols="12" md="4">
-                        <ForumMenu class="mb-4" />
-
-                        <AnonymousMenu class="mb-4" />
+                        <StatisticsMenu class="mb-4" :forumId="forum.Forum.Id" />
 
                         <ModeratorsMenu class="mb-4" :moderators="forum.Moderators" />
+
+                        <AnonymousMenu class="mb-4" v-if="$store.state.user.userId === null" />
                     </v-col>
                 </v-row>
             </v-card>
@@ -61,19 +68,19 @@
 </template>
 
 <script>
-import ForumMenu from '../components/hidden/forum/ForumMenu';
-import AnonymousMenu from '../components/hidden/forum/AnonymousMenu';
-import ModeratorsMenu from '../components/hidden/forum/ModeratorsMenu';
+import StatisticsMenu from '../../components/hidden/forum/StatisticsMenu';
+import AnonymousMenu from '../../components/hidden/forum/AnonymousMenu';
+import ModeratorsMenu from '../../components/hidden/forum/ModeratorsMenu';
 
-import CreateTopicForm from '../components/hidden/forum/CreateTopicForm';
-import TopicList from '../components/hidden/forum/TopicList';
+import CreateTopicForm from '../../components/hidden/forum/CreateTopicForm';
+import TopicList from '../../components/hidden/forum/TopicList';
 
 export default {
     name: 'Forum',
 
     components: {
         ModeratorsMenu,
-        ForumMenu,
+        StatisticsMenu,
         CreateTopicForm,
         TopicList,
         AnonymousMenu
@@ -115,6 +122,11 @@ export default {
 
             this.setLoading(false);
             this.loading = false;
+        },
+
+        focusNewTopic() {
+            this.$refs.createTopicForm.$refs.title.focus();
+            this.$refs.createTopicForm.$refs.title.$el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         },
 
         async submitModerationAction() {

@@ -5,7 +5,7 @@
 
             <span class="ml-auto">
                 <v-icon x-small> fa fa-users </v-icon>
-                0 connecté(s)
+                {{ forumCount }} connecté(s)
             </span>
         </v-card-title>
 
@@ -13,16 +13,35 @@
             <v-list>
                 <v-list-item>
                     <v-list-item-content>
-                        <!-- <v-list-item-title> Gestion du forum </v-list-item-title>
-                        <v-list-item-subtitle style="white-space: normal">
-                            Modérateurs:
-                            <span style="color: white">
-                                Suumas Menchov-Giro Love-n-peace odoki LikeGod [FIREWORK]
-                            </span>
-                        </v-list-item-subtitle> -->
+
                     </v-list-item-content>
                 </v-list-item>
             </v-list>
         </v-card-text>
     </v-card>
 </template>
+
+<script>
+export default {
+    name: 'StatisticsMenu',
+
+    props: {
+        forumId: { required: true, type: Number }
+    },
+
+    data: () => ({
+        forumCount: 0
+    }),
+
+    methods: {
+        async fetchUsersCount() {
+            const { forumCount } = await this.getConnectedUsersCount(this.forumId);
+            this.forumCount = forumCount;
+        }
+    },
+
+    created() {
+        this.fetchUsersCount();
+    }
+};
+</script>

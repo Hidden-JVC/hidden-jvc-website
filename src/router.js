@@ -17,7 +17,7 @@ const router = new VueRouter({
         },
         {
             path: '/forums/:forumId/hidden',
-            component: () => import(/* webpackChunkName: "HiddenForum" */ './views/Forum.vue')
+            component: () => import(/* webpackChunkName: "HiddenForum" */ './views/hidden/Forum.vue')
         },
         {
             path: '/forums/:forumId/hidden/:topicId',

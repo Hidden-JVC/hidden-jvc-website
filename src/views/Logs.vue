@@ -16,7 +16,7 @@
                             </v-list-item-title>
 
                             <v-list-item-subtitle>
-                                {{ log.User.Name }}
+                                par {{ log.User.Name }}
                             </v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
@@ -68,5 +68,5 @@ export default {
     created() {
         this.fetchLogs();
     }
-}
+};
 </script>

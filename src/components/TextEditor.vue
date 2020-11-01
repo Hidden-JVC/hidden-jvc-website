@@ -81,23 +81,34 @@
                     <v-row class="mx-0 stickers-container">
                         <v-col v-for="sticker of stickers" :key="sticker.id" cols="3" lg="2">
                             <v-hover v-slot:default="{ hover }">
-                                <div>
-                                    <v-img v-if="risibankTab === 0" :src="sticker" width="70" height="55" @click.passive="addSticker(sticker)" class="mx-auto">
-                                        <v-row v-show="hover" align="end" class="fill-height">
-                                            <v-col class="pb-0 mr-1 text-right">
-                                                <v-icon @click.stop="removeSticker(sticker)" color="red" small> fas fa-trash </v-icon>
-                                            </v-col>
-                                        </v-row>
-                                    </v-img>
-
-                                    <v-img v-if="risibankTab !== 0" :src="sticker.risibank_link" width="70" height="55" @click.passive="addSticker(sticker.risibank_link)" class="mx-auto">
-                                        <v-row v-show="hover" align="end" class="fill-height">
-                                            <v-col class="pb-0 mr-1 text-right">
-                                                <v-icon @click.stop="saveSticker(sticker)" color="yellow" small> fas fa-star </v-icon>
-                                            </v-col>
-                                        </v-row>
-                                    </v-img>
-                                </div>
+                                <v-img v-if="risibankTab === 0" :src="sticker" width="70" height="55" @click.passive="addSticker(sticker)" class="mx-auto cursor-pointer">
+                                    <v-row v-show="hover" align="end" class="fill-height">
+                                        <v-col class="pb-0 mr-1 text-right">
+                                            <v-tooltip top>
+                                                <template v-slot:activator="{ on }">
+                                                    <v-icon @click.stop="removeSticker(sticker)" color="red" small v-on="on">
+                                                        fas fa-trash
+                                                    </v-icon>
+                                                </template>
+                                                Supprimer des favoris
+                                            </v-tooltip>
+                                        </v-col>
+                                    </v-row>
+                                </v-img>
+                                <v-img v-else :src="sticker.risibank_link" width="70" height="55" @click.passive="addSticker(sticker.risibank_link)" class="mx-auto cursor-pointer">
+                                    <v-row v-show="hover" align="end" class="fill-height">
+                                        <v-col class="pb-0 mr-1 text-right">
+                                            <v-tooltip top>
+                                                <template v-slot:activator="{ on }">
+                                                    <v-icon @click.stop="saveSticker(sticker)" color="yellow" small v-on="on">
+                                                        fas fa-star
+                                                    </v-icon>
+                                                </template>
+                                                Ajouter aux favoris
+                                            </v-tooltip>
+                                        </v-col>
+                                    </v-row>
+                                </v-img>
                             </v-hover>
                         </v-col>
                     </v-row>

@@ -1,11 +1,17 @@
 <template>
-    <v-row class="px-4">
+    <v-row>
         <v-col>
             <ValidationObserver ref="observer">
-                <h2 class="primary--text"> Nouveau sujet </h2>
+                <v-card class="mt-1 mb-5" outlined>
+                    <v-toolbar class="elevation-0" dense style="background-color: #303436;">
+                        <v-toolbar-title>
+                            Nouveau sujet
+                        </v-toolbar-title>
+                    </v-toolbar>
+                </v-card>
 
                 <ValidationProvider v-slot="{ errors }" name="Titre" rules="required">
-                    <v-text-field v-model="title" placeholder="Saisir le titre du sujet" :error-messages="errors" outlined dense />
+                    <v-text-field v-model="title" ref="title" placeholder="Saisir le titre du sujet" :error-messages="errors" outlined dense />
                 </ValidationProvider>
 
                 <TextEditor v-model="content" />

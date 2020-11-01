@@ -2,7 +2,6 @@
     <v-row v-if="topic !== null" justify="center" no-gutters>
         <v-col cols="12" lg="9">
             <v-card class="pa-0 px-lg-4" outlined>
-
                 <v-row class="px-4">
                     <v-col>
                         <v-breadcrumbs class="pa-0" :items="breadcrumbs" />
@@ -10,52 +9,52 @@
                 </v-row>
 
                 <v-row>
-                    <v-col>
+                    <v-col cols="12" lg="8">
                         <v-card outlined>
-                            <v-toolbar class="secondary elevation-0" dense>
+                            <v-toolbar class="elevation-0" dense style="background-color: #303436;">
                                 <v-toolbar-title>
                                     {{ topic.Topic.Title }}
                                 </v-toolbar-title>
                             </v-toolbar>
                         </v-card>
-                    </v-col>
-                </v-row>
 
-                <v-row no-gutters>
-                    <v-col cols="8">
                         <v-row no-gutters align="center">
-                            <v-col lg="3">
+                            <v-col cols="12" lg="3">
                                 <v-btn color="primary" block small> Répondre </v-btn>
                             </v-col>
 
-                            <v-col lg="6">
+                            <v-col cols="12" lg="6">
                                 <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" @input="fetchTopic()" dense />
                             </v-col>
 
-                            <v-col lg="3" class="text-right">
+                            <v-col cols="12" lg="3">
+                                <!-- <v-btn :to="`/forums/${this.forum.Forum.Id}/hidden`" class="secondary" block small> Liste des Sujets </v-btn> -->
                                 <v-btn @click="fetchTopic()" class="secondary" block small> Actualiser </v-btn>
                             </v-col>
                         </v-row>
 
-                    </v-col>
-                </v-row>
-
-                <v-row>
-                    <v-col cols="12" lg="8" class="px-0 px-lg-3 pt-0">
                         <v-row class="post-list">
                             <v-col cols="12" v-for="post of topic.Posts" :key="post.Post.Id">
                                 <Post class="post-card" :post="post" :topic="topic" :forum="forum" v-on:quote="quote" v-on:reloadTopic="fetchTopic()" />
                             </v-col>
                         </v-row>
 
-                        <v-row>
-                            <v-col class="px-0 px-lg-3">
+                        <v-row no-gutters align="center">
+                            <v-col cols="12" lg="3">
+                                <v-btn color="primary" block small> Répondre </v-btn>
+                            </v-col>
+
+                            <v-col cols="12" lg="6">
                                 <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" @input="fetchTopic()" />
+                            </v-col>
+
+                            <v-col cols="12" lg="3">
+                                <v-btn @click="fetchTopic()" class="secondary" block small> Actualiser </v-btn>
                             </v-col>
                         </v-row>
 
-                        <v-card class="mb-3" outlined>
-                            <v-toolbar class="elevation-0" dense>
+                        <v-card class="my-3" outlined>
+                            <v-toolbar class="elevation-0" dense style="background-color: #303436;">
                                 <v-toolbar-title>
                                     Répondre
                                 </v-toolbar-title>
@@ -69,14 +68,10 @@
                         </v-btn>
                     </v-col>
 
-                    <v-col cols="12" lg="4" class="pt-0">
-                        <v-row>
-                            <v-col>
-                                <TopicMenu class="mb-4" />
-                                <AnonymousMenu class="mb-4" />
-                                <ModeratorsMenu class="mb-4" :moderators="forum.Moderators" />
-                            </v-col>
-                        </v-row>
+                    <v-col cols="12" lg="4">
+                        <StatisticsMenu class="mb-4" :forumId="forum.Forum.Id" :topicId="topic.Topic.Id" />
+                        <ModeratorsMenu class="mb-4" :moderators="forum.Moderators" />
+                        <AnonymousMenu class="mb-4" v-if="$store.state.user.userId === null" />
                     </v-col>
                 </v-row>
             </v-card>
@@ -85,18 +80,18 @@
 </template>
 
 <script>
-import TopicMenu from '../../components/hidden/topic/TopicMenu';
+import TextEditor from '../../components/TextEditor';
 import Post from '../../components/hidden/topic/Post';
 import AnonymousMenu from '../../components/hidden/forum/AnonymousMenu';
 import ModeratorsMenu from '../../components/hidden/forum/ModeratorsMenu';
-import TextEditor from '../../components/TextEditor';
+import StatisticsMenu from '../../components/hidden/topic/StatisticsMenu';
 
 export default {
     name: 'HiddenTopic',
 
     components: {
         Post,
-        TopicMenu,
+        StatisticsMenu,
         TextEditor,
         AnonymousMenu,
         ModeratorsMenu

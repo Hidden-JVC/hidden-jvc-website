@@ -42,10 +42,10 @@
                             </template>
                         </td>
 
-                        <td>
-                            <a :href="`/#/forums/${forum.Forum.Id}/hidden/${topic.Topic.Id}`">
+                        <td @click="$router.push(`/forums/${forum.Forum.Id}/hidden/${topic.Topic.Id}`);">
+                            <router-link :to="`/forums/${forum.Forum.Id}/hidden/${topic.Topic.Id}`">
                                 {{ topic.Topic.Title }}
-                            </a>
+                            </router-link>
                         </td>
 
                         <td :class="getUserClass(topic.Author)">
@@ -97,9 +97,9 @@
 
                 <v-list-item-content class="pb-2">
                     <v-list-item-title class="mb-4">
-                        <a :href="`/#/forums/${forum.Forum.Id}/hidden/${topic.Topic.Id}`">
+                        <router-link :to="`/forums/${forum.Forum.Id}/hidden/${topic.Topic.Id}`">
                             {{ topic.Topic.Title }}
-                        </a>
+                        </router-link>
                         <span style="color: #748491">
                             ({{ topic.PostsCount }})
                         </span>
