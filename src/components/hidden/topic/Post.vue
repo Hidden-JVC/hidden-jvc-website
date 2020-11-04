@@ -1,27 +1,5 @@
 <template>
-    <v-card :class="{ 'pinned': post.Post.Pinned }" outlined>
-        <v-row class="px-3" v-if="showBanAccount || showBanIp">
-            <v-col>
-                <v-btn v-if="showBanAccount && !post.User.Banned" @click="banAccount(true)" class="mr-4" color="red" small>
-                    Ban
-                </v-btn>
-
-                <v-btn v-if="showBanAccount && post.User.Banned" @click="banAccount(false)" class="mr-4" color="orange" small>
-                    Déban
-                </v-btn>
-
-                <v-btn v-if="showBanIp && !post.User.IpBanned" @click="banIp(true)" class="mr-4" color="red" small>
-                    Ban IP
-                </v-btn>
-
-                <v-btn v-if="showBanIp && post.User.IpBanned" @click="banIp(false)" class="mr-4" color="red" small>
-                    Déban IP
-                </v-btn>
-            </v-col>
-        </v-row>
-
-        <v-divider v-if="showBanAccount || showBanIp" />
-
+    <v-card :class="{ 'pinned': post.Post.Pinned, 'owned': isPostMadeByConnectedUser }" outlined>
         <v-card-title class="py-0">
             <span class="mr-4">
                 <v-img v-if="post.User === null || post.User.ProfilePicture === null" src="@/assets/larry.png" width="40" height="40" />
@@ -38,45 +16,67 @@
                 </span>
             </span>
 
-            <!-- Quote -->
-            <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                    <v-icon @click="quote(post)" class="ml-4 ml-auto" x-small v-on="on">
-                        fas fa-quote-right
-                    </v-icon>
-                </template>
-                Citer
-            </v-tooltip>
-
-            <!-- Pin -->
-            <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                    <v-icon v-if="showPin" :color="post.Post.Pinned ? 'red' : 'green'" @click="pin()" class="ml-4" x-small v-on="on">
-                        fas fa-thumbtack
-                    </v-icon>
-                </template>
-                {{ post.Post.Pinned ? 'Désépingler' : 'Épingler' }}
-            </v-tooltip>
-
             <!-- Edit -->
             <v-tooltip top>
                 <template v-slot:activator="{ on }">
-                    <v-icon v-if="showEdit" @click="toggleEdit()" class="ml-4" color="blue" x-small v-on="on">
+                    <v-icon v-if="showEdit" @click="toggleEdit()" class="ml-auto" color="blue" x-small v-on="on">
                         fas fa-edit
                     </v-icon>
                 </template>
                 Modifier
             </v-tooltip>
 
-            <!-- Delete -->
+            <!-- Quote -->
             <v-tooltip top>
                 <template v-slot:activator="{ on }">
-                    <v-icon v-if="showDelete" @click="deletePost()" class="ml-4" color="red" x-small v-on="on">
-                        fas fa-trash
+                    <v-icon @click="quote(post)" :class="showEdit ? 'ml-4' : 'ml-auto'" x-small v-on="on">
+                        fas fa-quote-right
                     </v-icon>
                 </template>
-                Supprimer
+                Citer
             </v-tooltip>
+
+            <v-menu offset-y>
+                <template v-slot:activator="{ on }">
+                    <v-icon class="ml-4" small v-on="on">
+                        fas fa-ellipsis-h
+                    </v-icon>
+                </template>
+
+                <v-list dense>
+                    <v-list-item v-if="post.User !== null" @click="$emit('fic-mode', post.User.Id)">
+                        <v-list-item-title> Afficher les posts de cet utilisateur sur le topic</v-list-item-title>
+                    </v-list-item>
+
+                    <v-list-item v-if="showEdit" @click="toggleEdit()">
+                        <v-list-item-title> Modifier </v-list-item-title>
+                    </v-list-item>
+
+                    <v-list-item v-if="showPin" @click="pin()">
+                        <v-list-item-title> {{ post.Post.Pinned ? 'Désépingler' : 'Épingler' }} </v-list-item-title>
+                    </v-list-item>
+
+                    <v-list-item v-if="showDelete" @click="deletePost()">
+                        <v-list-item-title> Supprimer </v-list-item-title>
+                    </v-list-item>
+
+                    <v-list-item v-if="showBanAccount" @click="banAccount(true)">
+                        <v-list-item-title> Ban le compte </v-list-item-title>
+                    </v-list-item>
+
+                    <v-list-item v-if="showUnbanAccount" @click="banAccount(false)">
+                        <v-list-item-title> Déban le compte </v-list-item-title>
+                    </v-list-item>
+
+                    <v-list-item v-if="showBanIp" @click="banIp(true)">
+                        <v-list-item-title> Ban l'ip </v-list-item-title>
+                    </v-list-item>
+
+                    <v-list-item v-if="showUnbanIp" @click="banIp(false)">
+                        <v-list-item-title> Déban l'ip </v-list-item-title>
+                    </v-list-item>
+                </v-list>
+            </v-menu>
         </v-card-title>
 
         <v-divider />
@@ -148,13 +148,27 @@ export default {
         },
 
         showBanAccount() {
-            return this.isAdmin
-                || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'BanAccount');
+            return this.post.User !== null && !this.post.User.Banned && (
+                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'BanAccount')
+            );
+        },
+
+        showUnbanAccount() {
+            return this.post.User !== null && this.post.User.Banned && (
+                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'BanAccount')
+            );
         },
 
         showBanIp() {
-            return this.isAdmin
-                || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'BanIp');
+            return !this.post.Post.IpBanned && (
+                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'BanIp')
+            );
+        },
+
+        showUnbanIp() {
+            return this.post.Post.IpBanned && (
+                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'BanIp')
+            );
         },
 
         showPin() {
@@ -300,7 +314,11 @@ export default {
 
 <style lang="scss" scoped>
 .pinned {
-    border-color: red;
+    border-color: #060;
+}
+
+.owned {
+    border-color: #2196f3;
 }
 
 .admin-user {

@@ -259,7 +259,7 @@ export default {
 }
 
 .preview {
-    height: 158px;
+    min-height: 158px;
     padding: 5px;
 }
 

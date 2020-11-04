@@ -18,8 +18,9 @@
                             </v-toolbar>
                         </v-card>
 
-                        <v-row no-gutters align="center">
+                        <v-row no-gutters class="py-4" align="center">
                             <v-col cols="12" lg="3">
+                                <v-btn v-if="userId !== null" @click="resetFicMode()" class="secondary mb-4" block small> Revenir sur le sujet </v-btn>
                                 <v-btn color="primary" block small> Répondre </v-btn>
                             </v-col>
 
@@ -28,14 +29,14 @@
                             </v-col>
 
                             <v-col cols="12" lg="3">
-                                <!-- <v-btn :to="`/forums/${this.forum.Forum.Id}/hidden`" class="secondary" block small> Liste des Sujets </v-btn> -->
+                                <v-btn @click="returnToForum()" class="secondary mb-4" block small> Liste des Sujets </v-btn>
                                 <v-btn @click="fetchTopic()" class="secondary" block small> Actualiser </v-btn>
                             </v-col>
                         </v-row>
 
                         <v-row class="post-list">
                             <v-col cols="12" v-for="post of topic.Posts" :key="post.Post.Id">
-                                <Post class="post-card" :post="post" :topic="topic" :forum="forum" v-on:quote="quote" v-on:reloadTopic="fetchTopic()" />
+                                <Post class="post-card" :post="post" :topic="topic" :forum="forum" @quote="quote" @reloadTopic="fetchTopic()" @fic-mode="ficMode" />
                             </v-col>
                         </v-row>
 
@@ -101,6 +102,8 @@ export default {
         forum: null,
         topic: null,
 
+        userId: null,
+
         page: 1,
         limit: 20,
         postsCount: 0,
@@ -141,9 +144,20 @@ export default {
                     this.forum = forum;
                 }
 
-                const { topic } = await this.repos.hidden.getTopic(this.$route.params.topicId, this.page);
+                const { topic } = await this.repos.hidden.getTopic(this.$route.params.topicId, this.page, this.userId);
                 this.topic = topic;
                 this.postsCount = this.topic.PostsCount;
+
+                // const query = {
+                //     page: this.page
+                // };
+
+                // if (this.firstRequest) {
+                //     this.firstRequest = false;
+                //     this.$router.replace({ query }).catch(() => { });
+                // } else {
+                //     this.$router.push({ query }).catch(() => { });
+                // }
             } catch (err) {
                 console.error(err);
             } finally {
@@ -172,10 +186,38 @@ export default {
             content += '\n\n';
 
             this.$refs.textEditor.appendText(content);
+        },
+
+        ficMode(userId) {
+            this.userId = userId;
+            this.fetchTopic();
+        },
+
+        resetFicMode() {
+            this.userId = null;
+            this.fetchTopic();
+        },
+
+        returnToForum() {
+            this.$router.push(`/forums/${this.forum.Forum.Id}/hidden`);
         }
     },
 
+    // watch: {
+    //     '$route': function (to, from) {
+    //         if (Object.keys(from.query).length > 0) {
+    //             console.log('navigation reload');
+    //             // this.fetchTopic();
+    //         }
+    //     }
+    // },
+
     created() {
+        // let { page } = this.$route.query;
+        // if (page) {
+        //     this.page = parseInt(page);
+        // }
+
         this.fetchTopic();
     }
 };

@@ -18,7 +18,6 @@
 
                 <v-list-item-content>
                     <v-list-item-title class="title"> {{ $store.state.user.name }} </v-list-item-title>
-                    <v-list-item-subtitle> msetair.dedeset@gmail.com </v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
 

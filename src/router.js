@@ -12,10 +12,6 @@ const router = new VueRouter({
             component: () => import(/* webpackChunkName: "Account" */ './views/Account.vue')
         },
         {
-            path: '/forums',
-            component: () => import(/* webpackChunkName: "Forums" */ './views/Forums.vue')
-        },
-        {
             path: '/forums/:forumId/hidden',
             component: () => import(/* webpackChunkName: "HiddenForum" */ './views/hidden/Forum.vue')
         },
@@ -26,8 +22,19 @@ const router = new VueRouter({
         {
             path: '/logs',
             component: () => import(/* webpackChunkName: "Logs" */ './views/Logs.vue')
+        },
+        {
+            path: '*',
+            component: () => import(/* webpackChunkName: "NotFound" */ './views/NotFound.vue')
         }
-    ]
+    ],
+    scrollBehavior(to, from, savedPosition) {
+        if (savedPosition) {
+            return savedPosition;
+        } else {
+            return { x: 0, y: 0 };
+        }
+    }
 });
 
 export default router;

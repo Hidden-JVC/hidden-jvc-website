@@ -7,6 +7,8 @@ import hidden from './repositories/hidden.js';
 
 import { mapState } from 'vuex';
 
+const SOCKET_URL = process.env.NODE_ENV === 'production' ? 'https://socket.hiddenjvc.com' : 'http://192.168.1.21:8989';
+
 Vue.mixin({
     data: () => ({
         repos: {
@@ -37,7 +39,7 @@ Vue.mixin({
                     data.topicId = topicId;
                 }
 
-                const socket = io.connect('http://127.0.0.1:8989', { transports: ['websocket'] });
+                const socket = io.connect(SOCKET_URL, { transports: ['websocket'] });
 
                 socket.on('connect', () => {
                     socket.emit('get-users-count', data, (response) => {

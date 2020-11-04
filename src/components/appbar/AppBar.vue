@@ -35,11 +35,20 @@
 
         <v-tooltip bottom>
             <template v-slot:activator="{ on }">
+                <a href="https://http://hiddenjvc.com/" target="_blank">
+                    <v-icon class="mr-4" v-on="on" small> fas fa-database </v-icon>
+                </a>
+            </template>
+            Sauvegardes de la base de données
+        </v-tooltip>
+
+        <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
                 <a href="https://github.com/Hidden-JVC/hidden-jvc-extension" target="_blank">
                     <v-icon class="mr-4" v-on="on" small> fab fa-github </v-icon>
                 </a>
             </template>
-            Répo github
+            Repo github
         </v-tooltip>
 
         <!-- <v-badge :content="6" class="mr-6">
