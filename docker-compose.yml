@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  hidden-jvc-website:
+    container_name: hidden-jvc-website
+    build: .
+    environment:
+      USE_SUB_FOLDER: "0"
+    ports:
+      - "6565:80"

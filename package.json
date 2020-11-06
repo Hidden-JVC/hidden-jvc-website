@@ -9,7 +9,7 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.8.2",
         "date-fns": "^2.15.0",
-        "hidden-jvc-jvcode": "file:../hidden-jvc-jvcode",
+        "hidden-jvc-jvcode": "git+https://github.com/Hidden-JVC/hidden-jvc-jvcode.git#1.0.0",
         "roboto-fontface": "*",
         "socket.io-client": "^2.3.1",
         "vee-validate": "^3.2.4",
