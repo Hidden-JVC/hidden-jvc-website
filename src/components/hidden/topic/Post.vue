@@ -45,7 +45,7 @@
 
                 <v-list dense>
                     <v-list-item v-if="post.User !== null" @click="$emit('fic-mode', post.User.Id)">
-                        <v-list-item-title> Afficher les posts de cet utilisateur sur le topic</v-list-item-title>
+                        <v-list-item-title> Afficher les posts de cet utilisateur </v-list-item-title>
                     </v-list-item>
 
                     <v-list-item v-if="showEdit" @click="toggleEdit()">

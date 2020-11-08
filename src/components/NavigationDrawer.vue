@@ -1,5 +1,5 @@
 <template>
-    <v-navigation-drawer app clipped>
+    <v-navigation-drawer app clipped expand-on-hover>
         <v-list dense nav>
             <v-list-item to="/">
                 <v-list-item-action>

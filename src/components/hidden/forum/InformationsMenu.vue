@@ -1,7 +1,7 @@
 <template>
     <v-card outlined>
         <v-card-title class="subtitle-2 pa-2" style="background-color: #303436;">
-            Statistiques
+            Informations
 
             <span class="ml-auto">
                 <v-icon x-small> fa fa-users </v-icon>
@@ -9,24 +9,28 @@
             </span>
         </v-card-title>
 
-        <v-card-text class="pa-0" style="background-color: #444a4d;">
-            <v-list>
-                <v-list-item>
-                    <v-list-item-content>
+        <v-card-text class="pt-4">
+            Modérateurs: 
 
-                    </v-list-item-content>
-                </v-list-item>
-            </v-list>
+            <ul>
+                <li v-for="moderator of moderators" :key="moderator.Id" v-text="moderator.Name">
+                    {{ moderator.Name }}
+                </li>
+            </ul>
         </v-card-text>
     </v-card>
 </template>
 
 <script>
 export default {
-    name: 'StatisticsMenu',
+    name: 'InformationsMenu',
 
     props: {
-        forumId: { required: true, type: Number }
+        forumId: { required: true, type: Number },
+        moderators: {
+            required: true,
+            type: Array
+        }
     },
 
     data: () => ({

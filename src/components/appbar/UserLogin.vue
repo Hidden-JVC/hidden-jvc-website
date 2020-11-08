@@ -16,7 +16,7 @@
                 <v-list>
                     <v-list-item>
                         <v-list-item-content>
-                            <ValidationProvider v-slot="{ errors }" name="Pseudo" rules="required">
+                            <ValidationProvider v-slot="{ errors }" name="Pseudo" rules="required|max:15">
                                 <v-text-field v-model.trim="name" label="Pseudo" @keydown.enter="login()" :error-messages="errors" outlined dense />
                             </ValidationProvider>
                         </v-list-item-content>

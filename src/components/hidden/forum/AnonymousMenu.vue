@@ -4,14 +4,10 @@
             Compte anonyme
         </v-card-title>
 
-        <v-card-text>
-            <v-row>
-                <v-col>
-                    <v-text-field v-model.trim="name" ref="name" class="mb-4" placeholder="Pseudo" outlined dense hide-details :disabled="!edit" />
-                    <v-btn v-show="!edit" @click="toggleOn()" class="secondary" small block> Modifier </v-btn>
-                    <v-btn v-show="edit" @click="save()" color="primary" small block> Enregistrer </v-btn>
-                </v-col>
-            </v-row>
+        <v-card-text class="pt-4">
+            <v-text-field v-model.trim="name" ref="name" class="mb-4" placeholder="Pseudo" outlined dense hide-details :disabled="!edit" />
+            <v-btn v-show="!edit" @click="toggleOn()" class="secondary" small> Modifier </v-btn>
+            <v-btn v-show="edit" @click="save()" color="primary" small> Enregistrer </v-btn>
         </v-card-text>
     </v-card>
 </template>

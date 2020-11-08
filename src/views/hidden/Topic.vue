@@ -1,6 +1,6 @@
 <template>
     <v-row v-if="topic !== null" justify="center" no-gutters>
-        <v-col cols="12" lg="9">
+        <v-col cols="12" xl="9">
             <v-card class="pa-0 px-lg-4" outlined>
                 <v-row class="px-4">
                     <v-col>
@@ -70,8 +70,7 @@
                     </v-col>
 
                     <v-col cols="12" lg="4">
-                        <StatisticsMenu class="mb-4" :forumId="forum.Forum.Id" :topicId="topic.Topic.Id" />
-                        <ModeratorsMenu class="mb-4" :moderators="forum.Moderators" />
+                        <InformationsMenu class="mb-4" :forumId="forum.Forum.Id" :topicId="topic.Topic.Id" :moderators="forum.Moderators" />
                         <AnonymousMenu class="mb-4" v-if="$store.state.user.userId === null" />
                     </v-col>
                 </v-row>
@@ -84,18 +83,16 @@
 import TextEditor from '../../components/TextEditor';
 import Post from '../../components/hidden/topic/Post';
 import AnonymousMenu from '../../components/hidden/forum/AnonymousMenu';
-import ModeratorsMenu from '../../components/hidden/forum/ModeratorsMenu';
-import StatisticsMenu from '../../components/hidden/topic/StatisticsMenu';
+import InformationsMenu from '../../components/hidden/topic/InformationsMenu';
 
 export default {
     name: 'HiddenTopic',
 
     components: {
         Post,
-        StatisticsMenu,
+        InformationsMenu,
         TextEditor,
-        AnonymousMenu,
-        ModeratorsMenu
+        AnonymousMenu
     },
 
     data: () => ({

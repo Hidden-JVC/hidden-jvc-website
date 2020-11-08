@@ -1,6 +1,6 @@
 <template>
     <v-row v-if="forum !== null" justify="center" no-gutters>
-        <v-col cols="12" lg="9">
+        <v-col cols="12" xl="9">
             <v-card class="pa-0 px-lg-4" outlined>
                 <v-row>
                     <v-col>
@@ -55,9 +55,9 @@
                     </v-col>
 
                     <v-col cols="12" md="4">
-                        <StatisticsMenu class="mb-4" :forumId="forum.Forum.Id" />
+                        <InformationsMenu class="mb-4" :forumId="forum.Forum.Id" :moderators="forum.Moderators" />
 
-                        <ModeratorsMenu class="mb-4" :moderators="forum.Moderators" />
+                        <SearchMenu class="mb-4" @search="makeSearch" />
 
                         <AnonymousMenu class="mb-4" v-if="$store.state.user.userId === null" />
                     </v-col>
@@ -68,9 +68,9 @@
 </template>
 
 <script>
-import StatisticsMenu from '../../components/hidden/forum/StatisticsMenu';
+import InformationsMenu from '../../components/hidden/forum/InformationsMenu';
 import AnonymousMenu from '../../components/hidden/forum/AnonymousMenu';
-import ModeratorsMenu from '../../components/hidden/forum/ModeratorsMenu';
+import SearchMenu from '../../components/hidden/forum/SearchMenu';
 
 import CreateTopicForm from '../../components/hidden/forum/CreateTopicForm';
 import TopicList from '../../components/hidden/forum/TopicList';
@@ -79,16 +79,14 @@ export default {
     name: 'Forum',
 
     components: {
-        ModeratorsMenu,
-        StatisticsMenu,
-        CreateTopicForm,
         TopicList,
-        AnonymousMenu
+        SearchMenu,
+        AnonymousMenu,
+        InformationsMenu,
+        CreateTopicForm
     },
 
     data: () => ({
-        loading: true,
-
         page: 1,
         limit: 20,
 
@@ -96,11 +94,8 @@ export default {
         topics: [],
         topicsCount: 0,
 
-        sortSelect: [
-            { text: 'Sujet', value: 'Title' },
-            { text: 'Nombre de posts', value: 'postsCount' },
-            { text: 'Dernier message', value: 'lastPostDate' }
-        ],
+        search: null,
+        searchType: null,
 
         moderationAction: null,
         selectedTopics: []
@@ -108,20 +103,33 @@ export default {
 
     methods: {
         async fetchTopics() {
-            this.loading = true;
-            this.setLoading(true);
 
-            if (this.forum === null) {
-                const { forum } = await this.repos.hidden.getForum(this.$route.params.forumId);
-                this.forum = forum;
+            try {
+                this.setLoading(true);
+
+                if (this.forum === null) {
+                    const { forum } = await this.repos.hidden.getForum(this.$route.params.forumId);
+                    this.forum = forum;
+                }
+
+                const query = {
+                    forumId: this.$route.params.forumId,
+                    page: this.page
+                };
+
+                if (this.search !== null && this.searchType !== null) {
+                    query.search = this.search;
+                    query.searchType = this.searchType;
+                }
+
+                const { topics, count } = await this.repos.hidden.getTopics(query);
+                this.topics = topics;
+                this.topicsCount = count;
+            } catch (err) {
+                console.error(err);
+            } finally {
+                this.setLoading(false);
             }
-
-            const { topics, count } = await this.repos.hidden.getTopics(this.$route.params.forumId, this.page);
-            this.topics = topics;
-            this.topicsCount = count;
-
-            this.setLoading(false);
-            this.loading = false;
         },
 
         focusNewTopic() {
@@ -152,6 +160,12 @@ export default {
             } finally {
                 this.setLoading(false);
             }
+        },
+
+        makeSearch(search, type) {
+            this.search = search;
+            this.searchType = type;
+            this.fetchTopics();
         }
     },
 

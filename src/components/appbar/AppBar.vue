@@ -35,7 +35,7 @@
 
         <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-                <a href="https://http://hiddenjvc.com/" target="_blank">
+                <a href="https://hiddenjvc.com/" target="_blank">
                     <v-icon class="mr-4" v-on="on" small> fas fa-database </v-icon>
                 </a>
             </template>

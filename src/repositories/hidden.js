@@ -5,8 +5,8 @@ class ForumRepository extends Repository {
         return await this.get(`jvc/forums/${forumId}`);
     }
 
-    async getTopics(forumId, page = 1) {
-        return await this.get('hidden/topics', { forumId, page });
+    async getTopics(query) {
+        return await this.get('hidden/topics', query);
     }
 
     async getTopic(topicId, page = 1, userId = null) {
