@@ -20,8 +20,8 @@
 
                         <v-row no-gutters class="py-4" align="center">
                             <v-col cols="12" lg="3">
-                                <v-btn v-if="userId !== null" @click="resetFicMode()" class="secondary mb-4" block small> Revenir sur le sujet </v-btn>
-                                <v-btn color="primary" block small> Répondre </v-btn>
+                                <v-btn v-if="userId !== null" @click="resetFicMode()" class="secondary mb-4" depressed block small> Revenir sur le sujet </v-btn>
+                                <v-btn color="primary" depressed block small> Répondre </v-btn>
                             </v-col>
 
                             <v-col cols="12" lg="6">
@@ -29,8 +29,8 @@
                             </v-col>
 
                             <v-col cols="12" lg="3">
-                                <v-btn @click="returnToForum()" class="secondary mb-4" block small> Liste des Sujets </v-btn>
-                                <v-btn @click="fetchTopic()" class="secondary" block small> Actualiser </v-btn>
+                                <v-btn @click="returnToForum()" class="secondary mb-4" depressed block small> Liste des Sujets </v-btn>
+                                <v-btn @click="fetchTopic()" class="secondary" depressed block small> Actualiser </v-btn>
                             </v-col>
                         </v-row>
 
@@ -42,7 +42,7 @@
 
                         <v-row no-gutters align="center">
                             <v-col cols="12" lg="3">
-                                <v-btn color="primary" block small> Répondre </v-btn>
+                                <v-btn color="primary" depressed block small> Répondre </v-btn>
                             </v-col>
 
                             <v-col cols="12" lg="6">
@@ -50,7 +50,7 @@
                             </v-col>
 
                             <v-col cols="12" lg="3">
-                                <v-btn @click="fetchTopic()" class="secondary" block small> Actualiser </v-btn>
+                                <v-btn @click="fetchTopic()" class="secondary" depressed block small> Actualiser </v-btn>
                             </v-col>
                         </v-row>
 
@@ -64,7 +64,7 @@
 
                         <TextEditor ref="textEditor" v-model="content" />
 
-                        <v-btn @click="createPost()" color="primary" small>
+                        <v-btn @click="createPost()" color="primary" depressed small>
                             Répondre
                         </v-btn>
                     </v-col>

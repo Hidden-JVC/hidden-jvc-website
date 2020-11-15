@@ -16,7 +16,7 @@
 
                 <TextEditor v-model="content" />
 
-                <v-btn color="primary" @click="createTopic()"> Poster </v-btn>
+                <v-btn color="primary" small depressed @click="createTopic()"> Poster </v-btn>
             </ValidationObserver>
         </v-col>
     </v-row>

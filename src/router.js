@@ -12,6 +12,10 @@ const router = new VueRouter({
             component: () => import(/* webpackChunkName: "Account" */ './views/Account.vue')
         },
         {
+            path: '/users/:userName',
+            component: () => import(/* webpackChunkName: "User" */ './views/User.vue')
+        },
+        {
             path: '/forums/:forumId/hidden',
             component: () => import(/* webpackChunkName: "HiddenForum" */ './views/hidden/Forum.vue')
         },

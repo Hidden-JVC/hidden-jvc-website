@@ -1,7 +1,7 @@
 <template>
     <v-dialog :max-width="450">
         <template v-slot:activator="{ on }">
-            <v-btn color="primary" v-on="on" small>
+            <v-btn color="primary" v-on="on" depressed small>
                 <v-icon small left> fas fa-user </v-icon>
                 Connexion
             </v-btn>
@@ -33,13 +33,13 @@
             </ValidationObserver>
 
             <v-card-actions>
-                <v-btn @click="login()" color="primary" small>
+                <v-btn @click="login()" color="primary" depressed small>
                     Se connecter
                 </v-btn>
 
                 <v-spacer />
 
-                <v-btn @click="register()" color="orange darken-4" small>
+                <v-btn @click="register()" color="orange darken-4" depressed small>
                     S'inscrire
                 </v-btn>
             </v-card-actions>

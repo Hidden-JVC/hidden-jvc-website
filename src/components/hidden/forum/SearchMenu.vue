@@ -14,7 +14,7 @@
                     <v-select v-model="type" :items="types" :menu-props="{ offsetY: true }" outlined dense :hide-details="!failed" class="mt-2" label="Type de la recherche" :error-messages="errors" />
                 </ValidationProvider>
 
-                <v-btn @click="submit()" class="mt-4" color="secondary" small>
+                <v-btn @click="submit()" class="mt-4" color="secondary" depressed block small>
                     Rechercher
                 </v-btn>
             </ValidationObserver>

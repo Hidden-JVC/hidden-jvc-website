@@ -6,8 +6,8 @@
 
         <v-card-text class="pt-4">
             <v-text-field v-model.trim="name" ref="name" class="mb-4" placeholder="Pseudo" outlined dense hide-details :disabled="!edit" />
-            <v-btn v-show="!edit" @click="toggleOn()" class="secondary" small> Modifier </v-btn>
-            <v-btn v-show="edit" @click="save()" color="primary" small> Enregistrer </v-btn>
+            <v-btn v-show="!edit" @click="toggleOn()" class="secondary" depressed small> Modifier </v-btn>
+            <v-btn v-show="edit" @click="save()" color="primary" depressed small> Enregistrer </v-btn>
         </v-card-text>
     </v-card>
 </template>

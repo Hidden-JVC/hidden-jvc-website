@@ -29,10 +29,16 @@ Vue.mixin({
 
         async getConnectedUsersCount(forumId, topicId) {
             return new Promise((resolve, reject) => {
+                const jwt = this.$store.state.user.jwt;
+
                 const data = {
                     forumId: forumId,
                     hidden: true
                 };
+
+                if (jwt !== null) {
+                    data.jwt = jwt;
+                }
 
                 if (topicId) {
                     data.hidden = true;
@@ -44,8 +50,10 @@ Vue.mixin({
                 socket.on('connect', () => {
                     socket.emit('get-users-count', data, (response) => {
                         const forumCount = response.forumCount;
+                        const forumUsers = response.forumUsers;
                         const topicCount = response.topicCount;
-                        resolve({ forumCount, topicCount });
+                        const topicUsers = response.topicUsers;
+                        resolve({ forumCount, forumUsers, topicCount, topicUsers });
                     });
                 });
 

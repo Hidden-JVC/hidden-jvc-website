@@ -7,7 +7,10 @@
             </span>
 
             <span>
-                <span :class="getUserClass(post.User)">
+                <router-link v-if="post.User !== null" :to="`/users/${post.User.Name}`" class="no-text-decoration" :class="getUserClass(post.User)">
+                    {{ getPostAuthorName() }}
+                </router-link>
+                <span v-else :class="getUserClass(post.User)">
                     {{ getPostAuthorName() }}
                 </span>
                 <br>
@@ -85,11 +88,11 @@
             <v-col>
                 <TextEditor v-model="editContent" />
 
-                <v-btn @click="edit()" color="primary" small>
+                <v-btn @click="edit()" color="primary" depressed small>
                     Modifier
                 </v-btn>
 
-                <v-btn @click="editMode = false" color="secondary" class="float-right" small>
+                <v-btn @click="editMode = false" color="secondary" class="float-right" depressed small>
                     Annuler
                 </v-btn>
             </v-col>

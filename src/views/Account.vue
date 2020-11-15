@@ -28,7 +28,7 @@
                             <div class="preview" v-html="preview"> </div>
                         </v-card>
 
-                        <v-btn @click="save()" color="primary" small>
+                        <v-btn @click="save()" color="primary" depressed small>
                             Enregistrer
                         </v-btn>
                     </v-card-text>
@@ -61,10 +61,10 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { user } = await this.repos.user.getUser(this.$store.state.user.userId);
-                this.email = user.Email;
-                this.signature = user.Signature;
-                this.profilePicture = user.ProfilePicture;
+                const { user } = await this.repos.user.getUser(this.$store.state.user.name);
+                this.email = user.User.Email;
+                this.signature = user.User.Signature;
+                this.profilePicture = user.User.ProfilePicture;
             } catch (err) {
                 console.error(err);
             } finally {

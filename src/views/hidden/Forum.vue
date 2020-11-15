@@ -24,16 +24,16 @@
                         </v-row>
 
                         <v-row align="center">
-                            <v-col cols="12" md="3">
-                                <v-btn @click="focusNewTopic()" color="primary" block small> Nouveau sujet </v-btn>
+                            <v-col cols="12" md="2">
+                                <v-btn @click="focusNewTopic()" color="primary" block depressed small> Nouveau sujet </v-btn>
                             </v-col>
 
-                            <v-col cols="12" md="6">
+                            <v-col cols="12" md="8">
                                 <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" @input="fetchTopics()" />
                             </v-col>
 
-                            <v-col cols="12" md="3" class="text-right">
-                                <v-btn @click="fetchTopics()" class="secondary" block small> Actualiser </v-btn>
+                            <v-col cols="12" md="2" class="text-right">
+                                <v-btn @click="fetchTopics()" class="secondary" block depressed small> Actualiser </v-btn>
                             </v-col>
                         </v-row>
 
@@ -41,7 +41,7 @@
                             <v-col offset="3" cols="6">
                                 <v-select v-model="moderationAction" :items="moderationSelect" menu-props="offsetY" outlined dense>
                                     <template v-slot:append-outer>
-                                        <v-btn @click="submitModerationAction()" color="secondary" small>
+                                        <v-btn @click="submitModerationAction()" color="secondary" depressed small>
                                             Valider
                                         </v-btn>
                                     </template>
@@ -56,10 +56,9 @@
 
                     <v-col cols="12" md="4">
                         <InformationsMenu class="mb-4" :forumId="forum.Forum.Id" :moderators="forum.Moderators" />
-
                         <SearchMenu class="mb-4" @search="makeSearch" />
-
                         <AnonymousMenu class="mb-4" v-if="$store.state.user.userId === null" />
+                        <UserListMenu :forumId="forum.Forum.Id" class="mb-4" />
                     </v-col>
                 </v-row>
             </v-card>
@@ -71,6 +70,7 @@
 import InformationsMenu from '../../components/hidden/forum/InformationsMenu';
 import AnonymousMenu from '../../components/hidden/forum/AnonymousMenu';
 import SearchMenu from '../../components/hidden/forum/SearchMenu';
+import UserListMenu from '../../components/hidden/forum/UserListMenu';
 
 import CreateTopicForm from '../../components/hidden/forum/CreateTopicForm';
 import TopicList from '../../components/hidden/forum/TopicList';
@@ -81,6 +81,7 @@ export default {
     components: {
         TopicList,
         SearchMenu,
+        UserListMenu,
         AnonymousMenu,
         InformationsMenu,
         CreateTopicForm

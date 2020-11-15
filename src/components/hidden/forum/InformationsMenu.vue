@@ -39,8 +39,8 @@ export default {
 
     methods: {
         async fetchUsersCount() {
-            const { forumCount } = await this.getConnectedUsersCount(this.forumId);
-            this.forumCount = forumCount;
+            // const { forumCount } = await this.getConnectedUsersCount(this.forumId);
+            // this.forumCount = forumCount;
         }
     },
 
