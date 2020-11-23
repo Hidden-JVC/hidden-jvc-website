@@ -42,7 +42,7 @@
                             </template>
                         </td>
 
-                        <td @click="$router.push(`/forums/${forum.Forum.Id}/hidden/${topic.Topic.Id}`);">
+                        <td>
                             <router-link :to="`/forums/${forum.Forum.Id}/hidden/${topic.Topic.Id}`">
                                 {{ topic.Topic.Title }}
                             </router-link>

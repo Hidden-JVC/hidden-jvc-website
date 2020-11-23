@@ -20,22 +20,20 @@
             </v-btn>
         </v-toolbar-items>
 
-        <!-- <v-spacer />
-
-        <span>
-            <h2 class="d-inline-block primary--text mr-4">
-                Forum Blabla 18-25 ans
-            </h2>
-
-            <v-icon x-small> fa fa-users </v-icon>
-            0 connecté(s)
-        </span> -->
-
         <v-spacer />
 
         <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-                <a href="https://hiddenjvc.com/" target="_blank">
+                <a href="https://github.com/Hidden-JVC/hidden-jvc-extension/blob/master/docs/guide.md" target="_blank">
+                    <v-icon class="mr-4" v-on="on" small> fas fa-question-circle </v-icon>
+                </a>
+            </template>
+            Aide
+        </v-tooltip>
+
+        <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+                <a href="https://hiddenjvc.com/database-backups/" target="_blank">
                     <v-icon class="mr-4" v-on="on" small> fas fa-database </v-icon>
                 </a>
             </template>
@@ -50,10 +48,6 @@
             </template>
             Repo github
         </v-tooltip>
-
-        <!-- <v-badge :content="6" class="mr-6">
-            <v-icon class="mr-2" small> fas fa-bell </v-icon>
-        </v-badge> -->
 
         <UserLogin v-if="$store.state.user.userId === null" />
         <UserProfile v-if="$store.state.user.userId !== null" />

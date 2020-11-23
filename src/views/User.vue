@@ -41,12 +41,12 @@
                         <v-list>
                             <v-list-item v-for="badge of user.Badges" :key="badge.Id">
                                 <v-list-item-icon>
-                                    <!-- <v-icon> fas fa- </v-icon> -->
-                                    <v-img src="https://static.jvc.gg/1.125.2/img/profils/badges/64px/badge-present-jv.png" />
+                                    <v-img src="@/assets/badges/BetaTester.png" width="60" height="60" />
                                 </v-list-item-icon>
                                 <v-list-item-content>
                                     <v-list-item-title>
                                         {{ badge.Name }}
+                                        ( {{ badge.AssociationDate | toDateStr() }} )
                                     </v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>

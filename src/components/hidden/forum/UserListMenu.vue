@@ -9,8 +9,8 @@
             </span>
         </v-card-title>
 
-        <v-list>
-            <v-list-item v-for="user of forumUsers" :key="user.userId">
+        <v-list style="max-height: 200px; overflow-y: auto">
+            <v-list-item v-for="user of forumUsers" :key="user.userId" :to="`/users/${user.userName}`">
                 <v-list-item-avatar>
                     <v-img :src="user.profilePicture" />
                 </v-list-item-avatar>
@@ -26,7 +26,7 @@
                 </v-list-item-avatar>
 
                 <v-list-item-content>
-                    <v-list-item-title> {{ anonymousUserCount }} utilisateur(s) anonymes </v-list-item-title>
+                    <v-list-item-title class="light-grey--text"> {{ anonymousUserCount }} utilisateur(s) anonymes </v-list-item-title>
                 </v-list-item-content>
             </v-list-item>
         </v-list>

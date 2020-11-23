@@ -55,10 +55,10 @@
                     </v-col>
 
                     <v-col cols="12" md="4">
-                        <InformationsMenu class="mb-4" :forumId="forum.Forum.Id" :moderators="forum.Moderators" />
+                        <UserListMenu :forumId="forum.Forum.Id" class="mb-4" />
                         <SearchMenu class="mb-4" @search="makeSearch" />
                         <AnonymousMenu class="mb-4" v-if="$store.state.user.userId === null" />
-                        <UserListMenu :forumId="forum.Forum.Id" class="mb-4" />
+                        <InformationsMenu class="mb-4" :forumId="forum.Forum.Id" :moderators="forum.Moderators" />
                     </v-col>
                 </v-row>
             </v-card>
