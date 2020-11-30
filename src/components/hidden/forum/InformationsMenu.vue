@@ -5,13 +5,18 @@
         </v-card-title>
 
         <v-card-text class="pt-4">
-            Modérateurs: 
+            <template v-if="moderators.length > 0">
+                Modérateurs:
 
-            <ul>
-                <li v-for="moderator of moderators" :key="moderator.Id" v-text="moderator.Name">
-                    {{ moderator.Name }}
-                </li>
-            </ul>
+                <ul>
+                    <li v-for="moderator of moderators" :key="moderator.Id" v-text="moderator.Name">
+                        {{ moderator.Name }}
+                    </li>
+                </ul>
+            </template>
+            <template v-else>
+                Aucun modérateurs
+            </template>
         </v-card-text>
     </v-card>
 </template>

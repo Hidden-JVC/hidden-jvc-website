@@ -19,7 +19,6 @@
                                         </v-toolbar-title>
                                     </v-toolbar>
                                 </v-card>
-                                <!-- <h2 class="primary--text"> Forum {{ forum.Forum.Name }} </h2> -->
                             </v-col>
                         </v-row>
 
@@ -194,23 +193,23 @@ export default {
         moderationSelect() {
             const list = [];
 
-            if (this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'Lock')) {
+            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'Lock')) {
                 list.push({ value: 'Lock', text: 'Lock' });
             }
 
-            if (this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'UnLock')) {
+            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'UnLock')) {
                 list.push({ value: 'UnLock', text: 'Délock' });
             }
 
-            if (this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'Pin')) {
+            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'Pin')) {
                 list.push({ value: 'Pin', text: 'Epingler' });
             }
 
-            if (this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'UnPin')) {
+            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'UnPin')) {
                 list.push({ value: 'UnPin', text: 'Désépingler' });
             }
 
-            if (this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'Delete')) {
+            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'Delete')) {
                 list.push({ value: 'Delete', text: 'Supprimer' });
             }
 

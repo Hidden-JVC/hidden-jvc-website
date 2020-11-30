@@ -12,7 +12,8 @@
         <v-list style="max-height: 200px; overflow-y: auto">
             <v-list-item v-for="user of forumUsers" :key="user.userId" :to="`/users/${user.userName}`">
                 <v-list-item-avatar>
-                    <v-img :src="user.profilePicture" />
+                    <v-img v-if="user.profilePicture !== null" :src="user.profilePicture" />
+                    <v-img v-else src="@/assets/larry.png" />
                 </v-list-item-avatar>
 
                 <v-list-item-content>

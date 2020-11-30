@@ -5,7 +5,7 @@
                 <thead>
                     <tr>
                         <th style="width:1%"> </th>
-                        <th style="width: 70%"> SUJET </th>
+                        <th style="width: 65%"> SUJET </th>
                         <th> AUTEUR </th>
                         <th> NB </th>
                         <th> DERNIER MSG </th>
