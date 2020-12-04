@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay, differenceInDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 const current = new Date();
@@ -14,3 +14,6 @@ Vue.filter('topicLastPostDate', (str) => {
 });
 
 Vue.filter('postDate', (str) => format(new Date(str), 'dd MMMM yyyy à kk:mm:ss', { locale: fr }));
+
+Vue.filter('toDateStr', (str) => format(new Date(str), 'dd MMMM yyyy', { locale: fr }));
+Vue.filter('daysSinceDate', (str) => differenceInDays(new Date(), new Date(str)));

@@ -11,6 +11,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import './mixin.js';
 import './filters/index.js';
+import './scss/main.scss';
 
 new Vue({
     store,

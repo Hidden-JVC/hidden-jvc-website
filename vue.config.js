@@ -1,3 +1,3 @@
 module.exports = {
-    publicPath: process.env.NODE_ENV === 'production' ? '/hidden-jvc-website/' : '/'
+    publicPath: process.env.USE_SUB_FOLDER === '1' ? '/hidden-jvc-website/' : '/'
 };

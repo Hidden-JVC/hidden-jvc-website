@@ -1,7 +1,7 @@
 <template>
     <v-dialog :max-width="450">
         <template v-slot:activator="{ on }">
-            <v-btn color="primary" v-on="on" small>
+            <v-btn color="primary" v-on="on" depressed small>
                 <v-icon small left> fas fa-user </v-icon>
                 Connexion
             </v-btn>
@@ -16,7 +16,7 @@
                 <v-list>
                     <v-list-item>
                         <v-list-item-content>
-                            <ValidationProvider v-slot="{ errors }" name="Pseudo" rules="required">
+                            <ValidationProvider v-slot="{ errors }" name="Pseudo" rules="required|max:15">
                                 <v-text-field v-model.trim="name" label="Pseudo" @keydown.enter="login()" :error-messages="errors" outlined dense />
                             </ValidationProvider>
                         </v-list-item-content>
@@ -25,7 +25,7 @@
                     <v-list-item>
                         <v-list-item-content>
                             <ValidationProvider v-slot="{ errors }" name="Mot de passe" rules="required">
-                                <v-text-field v-model="password" label="Mot de passe" @keydown.enter="login()" :error-messages="errors" outlined dense />
+                                <v-text-field v-model="password" label="Mot de passe" @keydown.enter="login()" :error-messages="errors" outlined dense type="password" />
                             </ValidationProvider>
                         </v-list-item-content>
                     </v-list-item>
@@ -33,13 +33,13 @@
             </ValidationObserver>
 
             <v-card-actions>
-                <v-btn @click="login()" color="primary" small>
+                <v-btn @click="login()" color="primary" depressed small>
                     Se connecter
                 </v-btn>
 
                 <v-spacer />
 
-                <v-btn @click="register()" color="orange darken-4" small>
+                <v-btn @click="register()" color="orange darken-4" depressed small>
                     S'inscrire
                 </v-btn>
             </v-card-actions>

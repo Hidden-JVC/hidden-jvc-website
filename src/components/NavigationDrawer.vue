@@ -1,6 +1,6 @@
 <template>
-    <v-navigation-drawer app clipped>
-        <v-list dense nav>
+    <v-navigation-drawer app clipped expand-on-hover>
+        <v-list nav>
             <v-list-item to="/">
                 <v-list-item-action>
                     <v-icon> fas fa-home </v-icon>
@@ -62,12 +62,12 @@
         </v-list>
 
         <template v-slot:append>
-            <v-list>
+            <v-list class="py-0">
                 <v-divider />
 
                 <v-list-item to="/settings">
                     <v-list-item-action>
-                        <v-icon> fas fa-cogs </v-icon>
+                        <v-icon> fas fa-cog </v-icon>
                     </v-list-item-action>
                     <v-list-item-content>
                         <v-list-item-title> Paramètres </v-list-item-title>

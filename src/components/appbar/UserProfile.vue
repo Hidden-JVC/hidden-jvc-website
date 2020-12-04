@@ -18,13 +18,12 @@
 
                 <v-list-item-content>
                     <v-list-item-title class="title"> {{ $store.state.user.name }} </v-list-item-title>
-                    <v-list-item-subtitle> msetair.dedeset@gmail.com </v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
 
             <v-divider />
 
-            <v-list-item class="py-2" @click="disconnect()">
+            <v-list-item class="py-2" to="/account">
                 <v-list-item-action>
                     <v-icon small> fas fa-user </v-icon>
                 </v-list-item-action>
