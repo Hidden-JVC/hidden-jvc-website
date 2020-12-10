@@ -10,11 +10,21 @@
                     </v-toolbar>
                 </v-card>
 
-                <ValidationProvider v-slot="{ errors }" name="Titre" rules="required">
-                    <v-text-field v-model="title" ref="title" placeholder="Saisir le titre du sujet" :error-messages="errors" outlined dense />
+                <ValidationProvider v-slot="{ errors, failed }" name="Titre" rules="required">
+                    <v-text-field v-model.trim="title" ref="title" placeholder="Saisir le titre du sujet" :hide-details="!failed" :error-messages="errors" outlined dense />
                 </ValidationProvider>
 
-                <TextEditor v-model="content" />
+                <v-row align="center">
+                    <v-col cols="8">
+                        <v-btn color="secondary" small depressed> Ajouter un sondage </v-btn>
+                    </v-col>
+
+                    <v-col cols="4">
+                        <TagsSelect v-model="selectedTags" :tags="tags" placeholder="Associer des tags au sujet" />
+                    </v-col>
+                </v-row>
+
+                <TextEditor v-model.trim="content" />
 
                 <v-btn color="primary" small depressed @click="createTopic()"> Poster </v-btn>
             </ValidationObserver>
@@ -24,61 +34,27 @@
 
 <script>
 import TextEditor from '../../TextEditor';
+import TagsSelect from '../../widgets/TagsSelect';
 
 export default {
     name: 'CreateTopicForm',
 
     components: {
-        TextEditor
+        TextEditor,
+        TagsSelect
+    },
+
+    props: {
+        tags: { type: Array, default: () => [] }
     },
 
     data: () => ({
         title: '',
+        selectedTags: [],
         content: ''
     }),
 
     methods: {
-        async fetchRisibank() {
-            const response = await fetch('https://api.risibank.fr/api/v0/load');
-            const result = await response.json();
-            this.risibank = result.stickers;
-
-            // const response = await fetch('https://api.risibank.fr/api/v0/search', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ search: 'jesus' })
-            // });
-            // const result = await response.json();
-            // this.stickers = result.stickers;
-        },
-
-        addSticker(sticker) {
-            const textarea = this.$refs.textarea.$refs.input;
-
-            if (textarea.selectionStart || textarea.selectionStart == '0') {
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-
-                const before = textarea.value.substring(0, start);
-                // const selected = textarea.value.substring(start, end);
-                const after = textarea.value.substring(end, textarea.value.length);
-
-
-                this.content = `${before} ${sticker.risibank_link} ${after}`;
-
-                setTimeout(() => {
-                    textarea.focus();
-                    const cursorPosition = before.length + sticker.risibank_link.length + 1;
-                    textarea.setSelectionRange(cursorPosition, cursorPosition);
-                }, 0);
-
-
-            } else {
-                this.content += sticker.risibank_link;
-                textarea.focus();
-            }
-        },
-
         async createTopic() {
             try {
                 const valid = await this.$refs.observer.validate();
@@ -88,7 +64,7 @@ export default {
 
                 this.setLoading(true);
                 const forumId = parseInt(this.$route.params.forumId);
-                const { topicId, error } = await this.repos.hidden.createTopic(forumId, this.title, this.content.trim(), this.$store.state.user.anonymousName);
+                const { topicId, error } = await this.repos.hidden.createTopic(forumId, this.title, this.selectedTags, this.content.trim(), this.$store.state.user.anonymousName);
                 if (error) {
                     throw new Error(error);
                 }
@@ -99,10 +75,6 @@ export default {
                 this.setLoading(false);
             }
         }
-    },
-
-    created() {
-        this.fetchRisibank();
     }
 };
 </script>

@@ -9,28 +9,45 @@
                 </v-row>
 
                 <v-row>
-                    <v-col cols="12" lg="8">
-                        <v-card outlined>
+                    <v-col cols="12" lg="8" class="pt-0">
+                        <v-card class="my-3" outlined>
                             <v-toolbar class="elevation-0" dense style="background-color: #303436;">
-                                <v-toolbar-title>
-                                    {{ topic.Topic.Title }}
-                                </v-toolbar-title>
+                                <template v-if="!displayTitleInput">
+                                    <v-toolbar-title>
+                                        {{ topic.Topic.Title }}
+                                    </v-toolbar-title>
+
+                                    <v-btn v-if="displayUpdateTitleButton" @click="displayTitleInput = true" color="primary" class="ml-auto" depressed small>
+                                        Modifier
+                                    </v-btn>
+                                </template>
+
+                                <v-text-field v-if="displayTitleInput" v-model.trim="titleInput" hide-details outlined dense>
+                                    <template v-slot:append-outer>
+                                        <v-btn @click="updateTitle()" color="primary" class="ml-auto mr-2" depressed small>
+                                            Enregistrer
+                                        </v-btn>
+
+                                        <v-btn @click="displayTitleInput = false" color="secondary" depressed small>
+                                            Annuler
+                                        </v-btn>
+                                    </template>
+                                </v-text-field>
                             </v-toolbar>
                         </v-card>
 
-                        <v-row no-gutters class="py-4" align="center">
-                            <v-col cols="12" lg="3">
-                                <v-btn v-if="userId !== null" @click="resetFicMode()" class="secondary mb-4" depressed block small> Revenir sur le sujet </v-btn>
+                        <v-row no-gutters align="center">
+                            <v-col cols="12" lg="2">
                                 <v-btn color="primary" depressed block small> Répondre </v-btn>
+                                <v-btn v-if="userId !== null" @click="resetFicMode()" class="secondary mt-4" depressed block small> Revenir sur le sujet </v-btn>
                             </v-col>
 
-                            <v-col cols="12" lg="6">
+                            <v-col cols="12" lg="8">
                                 <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" @input="fetchTopic()" dense />
                             </v-col>
 
-                            <v-col cols="12" lg="3">
-                                <v-btn @click="returnToForum()" class="secondary mb-4" depressed block small> Liste des Sujets </v-btn>
-                                <v-btn @click="fetchTopic()" class="secondary" depressed block small> Actualiser </v-btn>
+                            <v-col cols="12" lg="2">
+                                <v-btn @click="returnToForum()" class="secondary" depressed block small> Liste des Sujets </v-btn>
                             </v-col>
                         </v-row>
 
@@ -41,16 +58,16 @@
                         </v-row>
 
                         <v-row no-gutters align="center">
-                            <v-col cols="12" lg="3">
-                                <v-btn color="primary" depressed block small> Répondre </v-btn>
+                            <v-col cols="12" lg="2">
+                                <v-btn @click="fetchTopic()" class="secondary" depressed block small> Actualiser </v-btn>
                             </v-col>
 
-                            <v-col cols="12" lg="6">
+                            <v-col cols="12" lg="8">
                                 <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" @input="fetchTopic()" />
                             </v-col>
 
-                            <v-col cols="12" lg="3">
-                                <v-btn @click="fetchTopic()" class="secondary" depressed block small> Actualiser </v-btn>
+                            <v-col cols="12" lg="2">
+                                <v-btn @click="returnToForum()" class="secondary" depressed block small> Liste des Sujets </v-btn>
                             </v-col>
                         </v-row>
 
@@ -70,7 +87,7 @@
                     </v-col>
 
                     <v-col cols="12" lg="4">
-                        <InformationsMenu class="mb-4" :forumId="forum.Forum.Id" :topicId="topic.Topic.Id" :moderators="forum.Moderators" />
+                        <InformationsMenu class="mb-4" :forum="forum" :topic="topic" :moderators="forum.Moderators" @reload-topic="fetchTopic()"/>
                         <AnonymousMenu class="mb-4" v-if="$store.state.user.userId === null" />
                     </v-col>
                 </v-row>
@@ -105,7 +122,10 @@ export default {
         limit: 20,
         postsCount: 0,
 
-        content: ''
+        content: '',
+
+        displayTitleInput: false,
+        titleInput: ''
     }),
 
     computed: {
@@ -128,6 +148,10 @@ export default {
                 length = 1;
             }
             return length;
+        },
+
+        displayUpdateTitleButton() {
+            return this.topic.Author && this.topic.Author.Id === this.$store.state.user.userId;
         }
     },
 
@@ -143,18 +167,8 @@ export default {
 
                 const { topic } = await this.repos.hidden.getTopic(this.$route.params.topicId, this.page, this.userId);
                 this.topic = topic;
+                this.titleInput = topic.Topic.Title;
                 this.postsCount = this.topic.PostsCount;
-
-                // const query = {
-                //     page: this.page
-                // };
-
-                // if (this.firstRequest) {
-                //     this.firstRequest = false;
-                //     this.$router.replace({ query }).catch(() => { });
-                // } else {
-                //     this.$router.push({ query }).catch(() => { });
-                // }
             } catch (err) {
                 console.error(err);
             } finally {
@@ -197,24 +211,24 @@ export default {
 
         returnToForum() {
             this.$router.push(`/forums/${this.forum.Forum.Id}/hidden`);
+        },
+
+        async updateTitle() {
+            try {
+                this.setLoading(true);
+
+                const topicId = parseInt(this.$route.params.topicId);
+                await this.repos.hidden.updateTopic(topicId, { title: this.titleInput });
+                this.fetchTopic();
+            } catch (err) {
+                console.error(err);
+            } finally {
+                this.setLoading(false);
+            }
         }
     },
 
-    // watch: {
-    //     '$route': function (to, from) {
-    //         if (Object.keys(from.query).length > 0) {
-    //             console.log('navigation reload');
-    //             // this.fetchTopic();
-    //         }
-    //     }
-    // },
-
     created() {
-        // let { page } = this.$route.query;
-        // if (page) {
-        //     this.page = parseInt(page);
-        // }
-
         this.fetchTopic();
     }
 };

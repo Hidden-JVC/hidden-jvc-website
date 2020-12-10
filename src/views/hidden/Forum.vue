@@ -50,12 +50,12 @@
 
                         <TopicList v-model="selectedTopics" :forum="forum" :topics="topics" :displayModerationTools="displayModerationTools" />
 
-                        <CreateTopicForm ref="createTopicForm" />
+                        <CreateTopicForm ref="createTopicForm" :tags="forum.Tags" />
                     </v-col>
 
                     <v-col cols="12" md="4">
                         <UserListMenu :forumId="forum.Forum.Id" class="mb-4" />
-                        <SearchMenu class="mb-4" @search="makeSearch" />
+                        <SearchMenu class="mb-4" @search="makeSearch" :tags="forum.Tags" />
                         <AnonymousMenu class="mb-4" v-if="$store.state.user.userId === null" />
                         <InformationsMenu class="mb-4" :forumId="forum.Forum.Id" :moderators="forum.Moderators" />
                     </v-col>
