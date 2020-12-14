@@ -203,12 +203,12 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { success } = await this.repos.hidden.updatePost(this.topic.Topic.Id, this.post.Post.Id, { content: this.editContent });
-                if (success) {
+                const { error } = await this.repos.hidden.updatePost(this.topic.Topic.Id, this.post.Post.Id, { content: this.editContent });
+                if (error) {
+                    this.openErrorDialog(error);
+                } else {
                     this.editMode = false;
                     this.$emit('reloadTopic');
-                } else {
-                    throw new Error('api error');
                 }
             } catch (err) {
                 console.error(err);
@@ -221,12 +221,12 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { success } = await this.repos.hidden.postsModeration('Delete', [this.post.Post.Id]);
-                if (success) {
+                const { error } = await this.repos.hidden.postsModeration('Delete', [this.post.Post.Id]);
+                if (error) {
+                    this.openErrorDialog(error);
+                } else {
                     this.editMode = false;
                     this.$emit('reloadTopic');
-                } else {
-                    throw new Error('api error');
                 }
             } catch (err) {
                 console.error(err);
@@ -239,11 +239,11 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { success } = await this.repos.hidden.updatePost(this.topic.Topic.Id, this.post.Post.Id, { pinned: !this.post.Post.Pinned });
-                if (success) {
-                    this.$emit('reloadTopic');
+                const { error } = await this.repos.hidden.updatePost(this.topic.Topic.Id, this.post.Post.Id, { pinned: !this.post.Post.Pinned });
+                if (error) {
+                    this.openErrorDialog(error);
                 } else {
-                    throw new Error('api error');
+                    this.$emit('reloadTopic');
                 }
             } catch (err) {
                 console.error(err);
@@ -256,12 +256,12 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { success } = await this.repos.hidden.postsModeration(ban ? 'BanAccount' : 'UnBanAccount', [this.post.Post.Id]);
-                if (success) {
+                const { error } = await this.repos.hidden.postsModeration(ban ? 'BanAccount' : 'UnBanAccount', [this.post.Post.Id]);
+                if (error) {
+                    this.openErrorDialog(error);
+                } else {
                     this.editMode = false;
                     this.$emit('reloadTopic');
-                } else {
-                    throw new Error('api error');
                 }
             } catch (err) {
                 console.error(err);
@@ -274,12 +274,12 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { success } = await this.repos.hidden.postsModeration(ban ? 'BanIp' : 'UnBanIp', [this.post.Post.Id]);
-                if (success) {
+                const { error } = await this.repos.hidden.postsModeration(ban ? 'BanIp' : 'UnBanIp', [this.post.Post.Id]);
+                if (error) {
+                    this.openErrorDialog(error);
+                } else {
                     this.editMode = false;
                     this.$emit('reloadTopic');
-                } else {
-                    throw new Error('api error');
                 }
             } catch (err) {
                 console.error(err);

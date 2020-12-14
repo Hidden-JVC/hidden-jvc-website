@@ -108,8 +108,12 @@ export default {
                 this.setLoading(true);
 
                 if (this.forum === null) {
-                    const { forum } = await this.repos.hidden.getForum(this.$route.params.forumId);
-                    this.forum = forum;
+                    const { forum, error } = await this.repos.hidden.getForum(this.$route.params.forumId);
+                    if (error) {
+                        this.openErrorDialog(error);
+                    } else {
+                        this.forum = forum;
+                    }
                 }
 
                 const query = {
@@ -122,10 +126,15 @@ export default {
                     query.searchType = this.searchType;
                 }
 
-                const { topics, count } = await this.repos.hidden.getTopics(query);
-                this.topics = topics;
-                this.topicsCount = count;
+                const { topics, count, error } = await this.repos.hidden.getTopics(query);
+                if (error) {
+                    this.openErrorDialog(error);
+                } else {
+                    this.topics = topics;
+                    this.topicsCount = count;
+                }
             } catch (err) {
+                this.openErrorDialog('Une erreur est survenue lors de la récupération des topics');
                 console.error(err);
             } finally {
                 this.setLoading(false);
@@ -149,11 +158,11 @@ export default {
                     return;
                 }
 
-                const { success } = await this.repos.hidden.topicsModeration(this.moderationAction, this.selectedTopics);
-                if (success) {
-                    await this.fetchTopics();
+                const { error } = await this.repos.hidden.topicsModeration(this.moderationAction, this.selectedTopics);
+                if (error) {
+                    this.openErrorDialog(error);
                 } else {
-                    throw new Error('api error');
+                    await this.fetchTopics();
                 }
             } catch (err) {
                 console.error(err);

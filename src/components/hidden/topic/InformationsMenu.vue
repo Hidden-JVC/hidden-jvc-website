@@ -74,9 +74,13 @@ export default {
                 this.setLoading(true);
 
                 const topicId = parseInt(this.$route.params.topicId);
-                await this.repos.hidden.updateTopic(topicId, { tags: this.selectedTags.map((t) => ({ id: t })) });
-                this.$emit('reload-topic');
-                this.displayTagsEdit = false;
+                const { error }= await this.repos.hidden.updateTopic(topicId, { tags: this.selectedTags.map((t) => ({ id: t })) });
+                if(error) {
+                    this.openErrorDialog(error);
+                } else {
+                    this.$emit('reload-topic');
+                    this.displayTagsEdit = false;
+                }
             } catch (err) {
                 console.error(err);
             } finally {

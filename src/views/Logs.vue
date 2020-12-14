@@ -54,9 +54,13 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { logs, count } = await this.repos.logs.getModerationLog(this.page, this.limit, this.userId);
-                this.logs = logs;
-                this.logsCount = count;
+                const { logs, count, error } = await this.repos.logs.getModerationLog(this.page, this.limit, this.userId);
+                if (error) {
+                    this.openErrorDialog(error);
+                } else {
+                    this.logs = logs;
+                    this.logsCount = count;
+                }
             } catch (err) {
                 console.error(err);
             } finally {

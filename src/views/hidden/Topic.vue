@@ -161,15 +161,24 @@ export default {
                 this.setLoading(true);
 
                 if (this.forum === null) {
-                    const { forum } = await this.repos.hidden.getForum(this.$route.params.forumId);
-                    this.forum = forum;
+                    const { forum, error } = await this.repos.hidden.getForum(this.$route.params.forumId);
+                    if (error) {
+                        this.openErrorDialog(error);
+                    } else {
+                        this.forum = forum;
+                    }
                 }
 
-                const { topic } = await this.repos.hidden.getTopic(this.$route.params.topicId, this.page, this.userId);
-                this.topic = topic;
-                this.titleInput = topic.Topic.Title;
-                this.postsCount = this.topic.PostsCount;
+                const { topic, error } = await this.repos.hidden.getTopic(this.$route.params.topicId, this.page, this.userId);
+                if (error) {
+                    this.openErrorDialog(error);
+                } else {
+                    this.topic = topic;
+                    this.titleInput = topic.Topic.Title;
+                    this.postsCount = this.topic.PostsCount;
+                }
             } catch (err) {
+                this.openErrorDialog('Une erreur est survenue lors de la récupération du topic');
                 console.error(err);
             } finally {
                 this.setLoading(false);
