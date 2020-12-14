@@ -6,9 +6,11 @@
 
         <v-card-text class="pt-4">
             <ValidationObserver ref="observer">
-                <ValidationProvider v-slot="{ errors, failed }" name="Recherche" rules="required|min:3">
-                    <v-text-field v-model="search" outlined dense :hide-details="!failed" label="Rechercher dans le forum" :error-messages="errors" />
+                <ValidationProvider v-slot="{ errors, failed }" name="Recherche" rules="min:3">
+                    <v-text-field v-show="type !== 'Tags'" v-model="search" outlined dense :hide-details="!failed" label="Rechercher dans le forum" :error-messages="errors" />
                 </ValidationProvider>
+
+                <v-select v-show="type === 'Tags'" v-model="selectedTags" :items="tags" item-value="Id" item-text="Name" label="Tags" hide-details :menu-props="{ offsetY: true }" multiple outlined dense />
 
                 <ValidationProvider v-slot="{ errors, failed }" name="Type" rules="required">
                     <v-select v-model="type" :items="types" :menu-props="{ offsetY: true }" outlined dense :hide-details="!failed" class="mt-2" label="Type de la recherche" :error-messages="errors" />
@@ -26,11 +28,16 @@
 export default {
     name: 'SearchMenu',
 
+    props: {
+        tags: { type: Array, default: () => [] }
+    },
+
     data: () => ({
         search: '',
-        type: '',
+        selectedTags: [],
+        type: 'Title',
 
-        types: [{ text: 'Sujet', value: 'Title' }, { text: 'Auteur', value: 'Author' }]
+        types: [{ text: 'Sujet', value: 'Title' }, { text: 'Auteur', value: 'Author' }, { text: 'Tags', value: 'Tags' }]
     }),
 
     methods: {
@@ -40,7 +47,12 @@ export default {
                 return;
             }
 
-            this.$emit('search', this.search, this.type);
+            let search = this.search;
+            if (this.type === 'Tags') {
+                search = this.selectedTags.join(',');
+            }
+
+            this.$emit('search', search, this.type);
         }
     }
 };

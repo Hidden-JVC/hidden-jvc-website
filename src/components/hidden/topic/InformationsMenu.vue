@@ -10,10 +10,30 @@
         </v-card-title>
 
         <v-card-text class="pt-4">
-            Modérateurs:
+            Tags:
+            <template v-if="displayTagsEdit">
+                <TagsSelect v-model="selectedTags" :tags="forum.Tags" placeholder="Modifier les tags du topic" class="mt-2 mb-4" />
+            </template>
 
+            <template v-if="!displayTagsEdit">
+                <v-chip class="ml-2" v-for="tag of topic.Tags" :key="tag.Name" :color="tag.Color" label small>
+                    {{ tag.Name }} <v-icon v-if="tag.Locked" x-small right> fas fa-lock </v-icon>
+                </v-chip>
+            </template>
+
+            <template v-if="displayUpdateTagsButton">
+                <br v-if="!displayTagsEdit"> <br v-if="!displayTagsEdit">
+
+                <v-btn @click="displayTagsEdit = true" v-show="!displayTagsEdit" color="primary" small depressed> Modifier </v-btn>
+                <v-btn @click="submitTags()" v-show="displayTagsEdit" color="primary" class="mr-4" small depressed> Enregistrer </v-btn>
+                <v-btn @click="displayTagsEdit = false" v-show="displayTagsEdit" color="secondary" small depressed> Annuler </v-btn>
+            </template>
+
+            <br> <br>
+
+            Modérateurs:
             <ul>
-                <li v-for="moderator of moderators" :key="moderator.Id" v-text="moderator.Name">
+                <li v-for="moderator of moderators" :key="moderator.Id">
                     {{ moderator.Name }}
                 </li>
             </ul>
@@ -22,31 +42,60 @@
 </template>
 
 <script>
+import TagsSelect from '../../widgets/TagsSelect';
+
 export default {
     name: 'InformationsMenu',
 
+    components: {
+        TagsSelect
+    },
+
     props: {
-        forumId: { required: true, type: Number },
-        topicId: { required: true, type: Number },
-        moderators: {
-            required: true,
-            type: Array
-        }
+        forum: { required: true, type: Object },
+        topic: { required: true, type: Object },
+        moderators: { required: true, type: Array }
     },
 
     data: () => ({
-        topicCount: 0
+        topicCount: 0,
+        displayTagsEdit: false,
+        selectedTags: []
     }),
 
     methods: {
         async fetchUsersCount() {
-            const { topicCount } = await this.getConnectedUsersCount(this.forumId, this.topicId);
+            const { topicCount } = await this.getConnectedUsersCount(this.forum.Forum.Id, this.topic.Topic.Id);
             this.topicCount = topicCount;
+        },
+
+        async submitTags() {
+            try {
+                this.setLoading(true);
+
+                const topicId = parseInt(this.$route.params.topicId);
+                await this.repos.hidden.updateTopic(topicId, { tags: this.selectedTags.map((t) => ({ id: t })) });
+                this.$emit('reload-topic');
+                this.displayTagsEdit = false;
+            } catch (err) {
+                console.error(err);
+            } finally {
+                this.setLoading(false);
+            }
+        }
+    },
+
+    computed: {
+        displayUpdateTagsButton() {
+            return this.isAdmin ||
+                this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'ModifyTag') ||
+                this.topic.Author && this.topic.Author.Id === this.$store.state.user.userId;
         }
     },
 
     created() {
         this.fetchUsersCount();
+        this.selectedTags = this.topic.Tags;
     }
 };
 </script>

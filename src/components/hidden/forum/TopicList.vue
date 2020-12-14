@@ -46,6 +46,12 @@
                             <router-link :to="`/forums/${forum.Forum.Id}/hidden/${topic.Topic.Id}`">
                                 {{ topic.Topic.Title }}
                             </router-link>
+
+                            <template v-if="$store.state.application.displayForumTags">
+                                <v-chip class="ml-2" v-for="tag of topic.Tags" :key="tag.Name" :color="tag.Color" label small>
+                                    {{ tag.Name }} <v-icon v-if="tag.Locked" x-small right> fas fa-lock </v-icon>
+                                </v-chip>
+                            </template>
                         </td>
 
                         <td :class="getUserClass(topic.Author)">
@@ -72,27 +78,27 @@
             <v-list-item v-for="topic of topics" :key="topic.Id">
                 <v-list-item-icon>
                     <template v-if="topic.Topic.Pinned">
-                        <template v-if="topic.Topic.Locked">
-                            <v-img src="@/assets/topic-marque-off.png" width="16" />
-                        </template>
-                        <template v-else>
-                            <v-img src="@/assets/topic-marque-on.png" width="16" />
-                        </template>
-                    </template>
+    <template v-if="topic.Topic.Locked">
+        <v-img src="@/assets/topic-marque-off.png" width="16" />
+    </template>
+    <template v-else>
+        <v-img src="@/assets/topic-marque-on.png" width="16" />
+    </template>
+</template>
 
                     <template v-else>
-                        <template v-if="topic.Topic.Locked">
-                            <v-img src="@/assets/topic-lock.png" width="16" />
-                        </template>
-                        <template v-else>
-                            <template v-if="topic.PostsCount >= 20">
-                                <v-img src="@/assets/topic-dossier2.png" width="16" />
-                            </template>
-                            <template v-else>
-                                <v-img src="@/assets/topic-dossier1.png" width="16" />
-                            </template>
-                        </template>
-                    </template>
+    <template v-if="topic.Topic.Locked">
+        <v-img src="@/assets/topic-lock.png" width="16" />
+    </template>
+    <template v-else>
+        <template v-if="topic.PostsCount >= 20">
+            <v-img src="@/assets/topic-dossier2.png" width="16" />
+        </template>
+        <template v-else>
+            <v-img src="@/assets/topic-dossier1.png" width="16" />
+        </template>
+    </template>
+</template>
                 </v-list-item-icon>
 
                 <v-list-item-content class="pb-2">
