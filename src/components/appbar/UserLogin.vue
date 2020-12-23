@@ -68,9 +68,10 @@ export default {
 
                 const { userId, isAdmin, jwt, moderators, error } = await this.repos.user.login(this.name, this.password);
                 if (error) {
-                    throw new Error(error);
+                    this.openErrorDialog(error);
+                } else {
+                    this.$store.commit('user/setUser', { userId, isAdmin, jwt, moderators, name: this.name });
                 }
-                this.$store.commit('user/setUser', { userId, isAdmin, jwt, moderators, name: this.name });
             } catch (err) {
                 console.error(err);
             } finally {
@@ -89,9 +90,10 @@ export default {
 
                 const { userId, isAdmin, jwt, moderators, error } = await this.repos.user.register(this.name, this.password);
                 if (error) {
-                    throw new Error(error);
+                    this.openErrorDialog(error);
+                } else {
+                    this.$store.commit('user/setUser', { userId, isAdmin, jwt, moderators, name: this.name });
                 }
-                this.$store.commit('user/setUser', { userId, isAdmin, jwt, moderators, name: this.name });
             } catch (err) {
                 console.error(err);
             } finally {

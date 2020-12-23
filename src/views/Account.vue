@@ -61,10 +61,14 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { user } = await this.repos.user.getUser(this.$store.state.user.name);
-                this.email = user.User.Email;
-                this.signature = user.User.Signature;
-                this.profilePicture = user.User.ProfilePicture;
+                const { user, error } = await this.repos.user.getUser(this.$store.state.user.name);
+                if (error) {
+                    this.openErrorDialog(error);
+                } else {
+                    this.email = user.User.Email;
+                    this.signature = user.User.Signature;
+                    this.profilePicture = user.User.ProfilePicture;
+                }
             } catch (err) {
                 console.error(err);
             } finally {
@@ -82,11 +86,11 @@ export default {
                     profilePicture: this.profilePicture
                 };
 
-                const { success } = await this.repos.user.updateUser(this.$store.state.user.userId, body);
-                if (success) {
-                    await this.fetchUser();
+                const { error } = await this.repos.user.updateUser(this.$store.state.user.userId, body);
+                if (error) {
+                    this.openErrorDialog(error);
                 } else {
-                    throw new Error('api error');
+                    await this.fetchUser();
                 }
             } catch (err) {
                 console.error(err);

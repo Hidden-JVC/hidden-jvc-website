@@ -27,6 +27,14 @@ Vue.mixin({
             this.$store.commit('application/setLoading', loading);
         },
 
+        openErrorDialog(message) {
+            this.$store.commit('application/openErrorDialog', message);
+        },
+
+        closeErrorDialog() {
+            this.$store.commit('application/closeErrorDialog');
+        },
+
         async getConnectedUsersCount(forumId, topicId) {
             return new Promise((resolve, reject) => {
                 const jwt = this.$store.state.user.jwt;

@@ -18,7 +18,8 @@ export default new Vuetify({
         dark: true,
         themes: {
             dark: {
-                primary: '#060'
+                primary: '#060',
+                error: '#c62828'
             }
         }
     }
