@@ -8,29 +8,25 @@
                     </v-card-title>
 
                     <v-card-text class="pt-5">
-                        <v-text-field label="Pseudo" :value="$store.state.user.name" disabled outlined dense />
+                        <ValidationObserver ref="observer">
+                            <v-text-field label="Pseudo" :value="$store.state.user.name" disabled outlined dense />
 
-                        <v-text-field v-model="email" label="Email" hint="Attention l'adresse email est visible par tout le monde, elle sert pour la récupération du compte en cas d'oubli de mot de passe" class="mb-4" persistent-hint outlined dense />
+                            <v-text-field v-model.trim="email" label="Email" hint="Attention l'adresse email est visible par tout le monde, elle sert pour la récupération du compte en cas d'oubli de mot de passe" class="mb-4" persistent-hint outlined dense />
 
-                        <!-- <v-alert border="left" type="warning" dense>
-                            Attention l'adresse email est publique
-                        </v-alert> -->
+                            <ValidationProvider v-slot="{ errors }" name="Image de profil" rules="noelshackurl">
+                                <v-text-field v-model.trim="profilePicture" label="Image de profil" placeholder="https://www.noelshack.com/" outlined dense :error-messages="errors">
+                                    <template v-slot:append-outer>
+                                        <v-img :src="profilePicture" width="30" height="30" />
+                                    </template>
+                                </v-text-field>
+                            </ValidationProvider>
 
-                        <v-text-field v-model="profilePicture" label="Image de profil" outlined dense>
-                            <template v-slot:append-outer>
-                                <v-img :src="profilePicture" width="30" height="30" />
-                            </template>
-                        </v-text-field>
+                            <TextEditor v-model="signature" :required="false" />
 
-                        <v-textarea v-model="signature" label="Signature" outlined dense />
-
-                        <v-card class="mb-4" outlined>
-                            <div class="preview" v-html="preview"> </div>
-                        </v-card>
-
-                        <v-btn @click="save()" color="primary" depressed small>
-                            Enregistrer
-                        </v-btn>
+                            <v-btn @click="save()" color="primary" depressed small>
+                                Enregistrer
+                            </v-btn>
+                        </ValidationObserver>
                     </v-card-text>
                 </v-card>
             </v-col>
@@ -41,8 +37,14 @@
 <script>
 import { parse } from 'hidden-jvc-jvcode';
 
+import TextEditor from '../components/TextEditor';
+
 export default {
     name: 'Account',
+
+    components: {
+        TextEditor
+    },
 
     data: () => ({
         email: null,
@@ -66,7 +68,7 @@ export default {
                     this.openErrorDialog(error);
                 } else {
                     this.email = user.User.Email;
-                    this.signature = user.User.Signature;
+                    this.signature = user.User.Signature || '';
                     this.profilePicture = user.User.ProfilePicture;
                 }
             } catch (err) {
@@ -79,6 +81,11 @@ export default {
         async save() {
             try {
                 this.setLoading(true);
+
+                const valid = await this.$refs.observer.validate();
+                if (!valid) {
+                    return;
+                }
 
                 const body = {
                     email: this.email,
@@ -93,7 +100,7 @@ export default {
                     await this.fetchUser();
                 }
             } catch (err) {
-                console.error(err);
+                this.openErrorDialog('Une erreur est survenue lors de la récupération des topics');
             } finally {
                 this.setLoading(false);
             }
