@@ -25,3 +25,12 @@ extend('required', {
     message: 'Ce champ est obligatoire'
 });
 
+extend('noelshackurl', {
+    message: 'Vous devez saisir un lien noelshack valide',
+    validate(value) {
+        if (typeof value !== 'string') {
+            return false;
+        }
+        return value.startsWith('https://www.noelshack.com/') || value.startsWith('https://image.noelshack.com/');
+    }
+});

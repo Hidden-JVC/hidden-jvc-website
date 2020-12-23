@@ -46,7 +46,7 @@
                     <v-icon small> fas fa-code-branch </v-icon>
                 </v-list-item-action>
 
-                <v-list-item-title> v0.1.0 </v-list-item-title>
+                <v-list-item-title> v1.0.0 </v-list-item-title>
             </v-list-item>
         </v-list>
     </v-menu>

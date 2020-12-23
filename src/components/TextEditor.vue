@@ -119,7 +119,7 @@
             </v-expand-transition>
         </v-card>
 
-        <ValidationProvider v-slot="{ errors }" name="Message" rules="required">
+        <ValidationProvider v-slot="{ errors }" name="Message" :rules="required ? 'required' : null">
             <v-textarea v-model="content" @change="$emit('input', content)" ref="textarea" :error-messages="errors" counter outlined />
         </ValidationProvider>
 
@@ -136,13 +136,14 @@ export default {
     name: 'TextEditor',
 
     props: {
-        value: { type: String, required: true }
+        value: { type: String, required: true },
+        required: { type: Boolean, default: true }
     },
 
     data() {
         return {
             content: this.value,
-            risibankTab: 1, // favorite tab
+            risibankTab: 1,
             risibank: null,
             showRisibank: true,
             risibankSearchResult: null,
