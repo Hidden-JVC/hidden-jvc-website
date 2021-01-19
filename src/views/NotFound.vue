@@ -4,7 +4,6 @@
             <div class="text-md-center">
                 <h1> 404 </h1>
                 <h2 class="my-3 headline">Page non trouvée</h2>
-                <!-- <router-link to="/connexion"> Se connecter </router-link> -->
             </div>
         </v-layout>
     </v-container>

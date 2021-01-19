@@ -1,0 +1,104 @@
+.bloc-spoil-jv {
+    margin-bottom: 0.9375rem;
+}
+.bloc-spoil-jv .contenu-spoil {
+    text-align: left;
+}
+.bloc-spoil-jv {
+    margin-bottom: 0.9375rem;
+}
+.bloc-spoil-jv .barre-head {
+    display: none;
+}
+.bloc-spoil-jv .contenu-spoil {
+    display: inline;
+    background: none;
+    border: none;
+    padding: 0;
+    text-align: left;
+}
+.bloc-spoil-jv {
+    margin-bottom: 1.875rem;
+    display: block;
+}
+.bloc-spoil-jv .barre-head {
+    font-family: Tahoma, Trebuchet MS, sans-serif;
+    height: 1.5rem;
+    line-height: 1.5rem;
+    cursor: pointer;
+    position: relative;
+    display: block;
+}
+.bloc-spoil-jv .txt-spoil {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4.6875rem;
+    font-size: 0.9285em;
+    text-align: center;
+    color: #fff;
+    text-transform: uppercase;
+    background: #d90000;
+    font-weight: 700;
+    display: block;
+}
+.bloc-spoil-jv .aff-spoil,
+.bloc-spoil-jv .masq-spoil {
+    color: #c40;
+    font-size: 0.9285em;
+    font-weight: 700;
+    display: block;
+    margin-left: 5.3125rem;
+}
+.bloc-spoil-jv .masq-spoil {
+    display: none;
+}
+.bloc-spoil-jv .contenu-spoil {
+    // border: 0.0625rem solid #fdd;
+    padding: 0.625rem;
+    display: none;
+    text-align: justify;
+}
+.bloc-spoil-jv .open-spoil {
+    position: absolute;
+    left: -999rem;
+}
+.bloc-spoil-jv .open-spoil:checked ~ .barre-head .aff-spoil {
+    display: none;
+}
+.bloc-spoil-jv .open-spoil:checked ~ .barre-head .masq-spoil {
+    display: block;
+}
+.bloc-spoil-jv .open-spoil:checked ~ .contenu-spoil {
+    display: block;
+    overflow: hidden;
+}
+.bloc-spoil-jv.en-ligne {
+    margin-bottom: 0;
+    display: inline;
+}
+.bloc-spoil-jv.en-ligne .barre-head {
+    height: auto;
+    line-height: inherit;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    display: inline;
+}
+.bloc-spoil-jv.en-ligne .txt-spoil {
+    position: static;
+    display: inline;
+    padding: 0.125rem 1.25rem;
+    line-height: inherit;
+}
+.bloc-spoil-jv.en-ligne .aff-spoil,
+.bloc-spoil-jv.en-ligne .masq-spoil {
+    display: none !important;
+}
+.bloc-spoil-jv.en-ligne .contenu-spoil {
+    padding: 0.1875rem;
+    border: 0;
+}
+.bloc-spoil-jv.en-ligne .open-spoil:checked ~ .contenu-spoil {
+    display: inline;
+}

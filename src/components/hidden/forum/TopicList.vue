@@ -18,32 +18,11 @@
                 <tbody>
                     <tr v-for="topic of topics" :key="topic.Id">
                         <td>
-                            <template v-if="topic.Topic.Pinned">
-                                <template v-if="topic.Topic.Locked">
-                                    <v-img src="@/assets/topic-marque-off.png" width="16" />
-                                </template>
-                                <template v-else>
-                                    <v-img src="@/assets/topic-marque-on.png" width="16" />
-                                </template>
-                            </template>
-
-                            <template v-else>
-                                <template v-if="topic.Topic.Locked">
-                                    <v-img src="@/assets/topic-lock.png" width="16" />
-                                </template>
-                                <template v-else>
-                                    <template v-if="topic.PostsCount >= 20">
-                                        <v-img src="@/assets/topic-dossier2.png" width="16" />
-                                    </template>
-                                    <template v-else>
-                                        <v-img src="@/assets/topic-dossier1.png" width="16" />
-                                    </template>
-                                </template>
-                            </template>
+                            <v-icon :color="getIconInfo(topic).color" small> {{ getIconInfo(topic).icon }} </v-icon>
                         </td>
 
                         <td>
-                            <router-link :to="`/forums/${forum.Forum.Id}/hidden/${topic.Topic.Id}`">
+                            <router-link :to="topicUrl(topic)">
                                 {{ topic.Topic.Title }}
                             </router-link>
 
@@ -70,6 +49,12 @@
                             <v-checkbox v-model="selectedTopics" :value="topic.Topic.Id" @change="$emit('input', selectedTopics)" dense />
                         </td>
                     </tr>
+
+                    <tr v-if="topics.length === 0">
+                        <td colspan="6" class="text-center">
+                            Aucun topic
+                        </td>
+                    </tr>
                 </tbody>
             </template>
         </v-simple-table>
@@ -77,33 +62,12 @@
         <v-list id="forum-list" v-if="this.$vuetify.breakpoint.mobile" dense>
             <v-list-item v-for="topic of topics" :key="topic.Id">
                 <v-list-item-icon>
-                    <template v-if="topic.Topic.Pinned">
-    <template v-if="topic.Topic.Locked">
-        <v-img src="@/assets/topic-marque-off.png" width="16" />
-    </template>
-    <template v-else>
-        <v-img src="@/assets/topic-marque-on.png" width="16" />
-    </template>
-</template>
-
-                    <template v-else>
-    <template v-if="topic.Topic.Locked">
-        <v-img src="@/assets/topic-lock.png" width="16" />
-    </template>
-    <template v-else>
-        <template v-if="topic.PostsCount >= 20">
-            <v-img src="@/assets/topic-dossier2.png" width="16" />
-        </template>
-        <template v-else>
-            <v-img src="@/assets/topic-dossier1.png" width="16" />
-        </template>
-    </template>
-</template>
+                    <v-icon :color="getIconInfo(topic).color" small> {{ getIconInfo(topic).icon }} </v-icon>
                 </v-list-item-icon>
 
                 <v-list-item-content class="pb-2">
                     <v-list-item-title class="mb-4">
-                        <router-link :to="`/forums/${forum.Forum.Id}/hidden/${topic.Topic.Id}`">
+                        <router-link :to="topicUrl(topic)">
                             {{ topic.Topic.Title }}
                         </router-link>
                         <span style="color: #748491">
@@ -130,6 +94,8 @@
 </template>
 
 <script>
+import textToUrl from '../../../helpers/textToUrl';
+
 export default {
     name: 'TopicList',
 
@@ -165,8 +131,33 @@ export default {
             }
         },
 
+        getIconInfo(topic) {
+            if (topic.Topic.Pinned) {
+                if (topic.Topic.Locked) {
+                    return { color: 'red', icon: 'fas fa-thumbtack' };
+                } else {
+                    return { color: 'green', icon: 'fas fa-thumbtack' };
+                }
+            } else {
+                if (topic.Topic.Locked) {
+                    return { color: 'blue-grey', icon: 'fas fa-lock' };
+
+                } else if (topic.PostsCount >= 20) {
+                    return { color: 'red', icon: 'fas fa-folder' };
+
+                } else {
+                    return { color: 'yellow darken-1', icon: 'fas fa-folder' };
+                }
+            }
+        },
+
         openTopic(topicId) {
             alert(topicId);
+        },
+
+        topicUrl(topic) {
+            const title = textToUrl(topic.Topic.Title);
+            return `/forums/${this.forum.Forum.Id}/hidden/${topic.Topic.Id}-` + title;
         }
     }
 };

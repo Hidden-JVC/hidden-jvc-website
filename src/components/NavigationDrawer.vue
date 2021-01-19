@@ -21,7 +21,7 @@
                 </v-list-item-content>
             </v-list-item>
 
-            <v-list-item to="/favorites">
+            <v-list-item to="/favoris">
                 <v-list-item-action>
                     <v-icon> fas fa-star </v-icon>
                 </v-list-item-action>

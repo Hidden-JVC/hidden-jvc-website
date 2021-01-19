@@ -56,7 +56,6 @@
                     <v-col cols="12" md="4">
                         <UserListMenu :forumId="forum.Forum.Id" class="mb-4" />
                         <SearchMenu class="mb-4" @search="makeSearch" :tags="forum.Tags" />
-                        <AnonymousMenu class="mb-4" v-if="$store.state.user.userId === null" />
                         <InformationsMenu class="mb-4" :forumId="forum.Forum.Id" :moderators="forum.Moderators" />
                     </v-col>
                 </v-row>
@@ -67,7 +66,6 @@
 
 <script>
 import InformationsMenu from '../../components/hidden/forum/InformationsMenu';
-import AnonymousMenu from '../../components/hidden/forum/AnonymousMenu';
 import SearchMenu from '../../components/hidden/forum/SearchMenu';
 import UserListMenu from '../../components/hidden/forum/UserListMenu';
 
@@ -81,7 +79,6 @@ export default {
         TopicList,
         SearchMenu,
         UserListMenu,
-        AnonymousMenu,
         InformationsMenu,
         CreateTopicForm
     },
@@ -113,6 +110,16 @@ export default {
                         this.openErrorDialog(error);
                     } else {
                         this.forum = forum;
+
+                        // const name = forum.Forum.Name
+                        //     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                        //     .split(' ')
+                        //     .map((e) => e.replace(/\W/g, ''))
+                        //     .filter((e) => e.length > 0)
+                        //     .join('-')
+                        //     .toLowerCase();
+
+                        // this.$router.replace(`/forums/${this.forum.Forum.Id}/hidden-` + name);
                     }
                 }
 

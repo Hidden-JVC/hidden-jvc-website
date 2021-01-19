@@ -38,7 +38,7 @@
 
                         <v-row no-gutters align="center">
                             <v-col cols="12" lg="2">
-                                <v-btn color="primary" depressed block small> Répondre </v-btn>
+                                <v-btn color="primary" @click="focusResponseForm()" depressed block small> Répondre </v-btn>
                                 <v-btn v-if="userId !== null" @click="resetFicMode()" class="secondary mt-4" depressed block small> Revenir sur le sujet </v-btn>
                             </v-col>
 
@@ -87,8 +87,8 @@
                     </v-col>
 
                     <v-col cols="12" lg="4">
+                        <UserListMenu :forumId="forum.Forum.Id" class="mb-4" />
                         <InformationsMenu class="mb-4" :forum="forum" :topic="topic" :moderators="forum.Moderators" @reload-topic="fetchTopic()"/>
-                        <AnonymousMenu class="mb-4" v-if="$store.state.user.userId === null" />
                     </v-col>
                 </v-row>
             </v-card>
@@ -99,7 +99,7 @@
 <script>
 import TextEditor from '../../components/TextEditor';
 import Post from '../../components/hidden/topic/Post';
-import AnonymousMenu from '../../components/hidden/forum/AnonymousMenu';
+import UserListMenu from '../../components/hidden/forum/UserListMenu';
 import InformationsMenu from '../../components/hidden/topic/InformationsMenu';
 
 export default {
@@ -107,9 +107,9 @@ export default {
 
     components: {
         Post,
-        InformationsMenu,
         TextEditor,
-        AnonymousMenu
+        UserListMenu,
+        InformationsMenu
     },
 
     data: () => ({
@@ -220,6 +220,11 @@ export default {
 
         returnToForum() {
             this.$router.push(`/forums/${this.forum.Forum.Id}/hidden`);
+        },
+
+        focusResponseForm() {
+            this.$refs.textEditor.$refs.textarea.focus();
+            this.$refs.textEditor.$refs.textarea.$el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         },
 
         async updateTitle() {

@@ -36,6 +36,8 @@
 import TextEditor from '../../TextEditor';
 import TagsSelect from '../../widgets/TagsSelect';
 
+import textToUrl from '../../../helpers/textToUrl';
+
 export default {
     name: 'CreateTopicForm',
 
@@ -68,7 +70,7 @@ export default {
                 if (error) {
                     this.openErrorDialog(error);
                 } else {
-                    this.$router.push(`/forums/${forumId}/hidden/${topicId}`);
+                    this.$router.push(`/forums/${forumId}/hidden/${topicId}-${textToUrl(this.title)}`);
                 }
             } catch (err) {
                 console.error(err);

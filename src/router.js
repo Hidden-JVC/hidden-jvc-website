@@ -8,6 +8,10 @@ const router = new VueRouter({
     base: process.env.BASE_URL,
     routes: [
         {
+            path: '/',
+            component: () => import(/* webpackChunkName: "Home" */ './views/Coming.vue')
+        },
+        {
             path: '/account',
             component: () => import(/* webpackChunkName: "Account" */ './views/Account.vue')
         },
@@ -16,12 +20,32 @@ const router = new VueRouter({
             component: () => import(/* webpackChunkName: "User" */ './views/User.vue')
         },
         {
+            path: '/forums',
+            component: () => import(/* webpackChunkName: "Forums" */ './views/Coming.vue')
+        },
+        {
+            path: '/forums/:forumId',
+            component: () => import(/* webpackChunkName: "Forum" */ './views/Coming.vue')
+        },
+        {
             path: '/forums/:forumId/hidden',
             component: () => import(/* webpackChunkName: "HiddenForum" */ './views/hidden/Forum.vue')
         },
         {
-            path: '/forums/:forumId/hidden/:topicId',
+            path: '/forums/:forumId/hidden/:topicId\\-(.*)',
             component: () => import(/* webpackChunkName: "HiddenTopic" */ './views/hidden/Topic.vue')
+        },
+        {
+            path: '/favoris',
+            component: () => import(/* webpackChunkName: "Favoris" */ './views/Coming.vue')
+        },
+        {
+            path: '/messagerie',
+            component: () => import(/* webpackChunkName: "Messagerie" */ './views/Coming.vue')
+        },
+        {
+            path: '/statistiques',
+            component: () => import(/* webpackChunkName: "Statistiques" */ './views/Coming.vue')
         },
         {
             path: '/logs',

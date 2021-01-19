@@ -2,11 +2,6 @@
     <v-card outlined>
         <v-card-title class="subtitle-2 pa-2" style="background-color: #303436;">
             Informations
-
-            <span class="ml-auto">
-                <v-icon x-small> fa fa-users </v-icon>
-                {{ topicCount }} connecté(s)
-            </span>
         </v-card-title>
 
         <v-card-text class="pt-4">
@@ -31,12 +26,18 @@
 
             <br> <br>
 
-            Modérateurs:
-            <ul>
-                <li v-for="moderator of moderators" :key="moderator.Id">
-                    {{ moderator.Name }}
-                </li>
-            </ul>
+            <template v-if="moderators.length > 0">
+                Modérateurs:
+
+                <ul>
+                    <li v-for="moderator of moderators" :key="moderator.Id" v-text="moderator.Name">
+                        {{ moderator.Name }}
+                    </li>
+                </ul>
+            </template>
+            <template v-else>
+                Aucun modérateurs
+            </template>
         </v-card-text>
     </v-card>
 </template>
@@ -58,24 +59,18 @@ export default {
     },
 
     data: () => ({
-        topicCount: 0,
         displayTagsEdit: false,
         selectedTags: []
     }),
 
     methods: {
-        async fetchUsersCount() {
-            const { topicCount } = await this.getConnectedUsersCount(this.forum.Forum.Id, this.topic.Topic.Id);
-            this.topicCount = topicCount;
-        },
-
         async submitTags() {
             try {
                 this.setLoading(true);
 
                 const topicId = parseInt(this.$route.params.topicId);
-                const { error }= await this.repos.hidden.updateTopic(topicId, { tags: this.selectedTags.map((t) => ({ id: t })) });
-                if(error) {
+                const { error } = await this.repos.hidden.updateTopic(topicId, { tags: this.selectedTags.map((t) => ({ id: t })) });
+                if (error) {
                     this.openErrorDialog(error);
                 } else {
                     this.$emit('reload-topic');
@@ -98,7 +93,6 @@ export default {
     },
 
     created() {
-        this.fetchUsersCount();
         this.selectedTags = this.topic.Tags;
     }
 };

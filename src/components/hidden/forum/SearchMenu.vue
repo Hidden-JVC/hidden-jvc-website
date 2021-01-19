@@ -7,10 +7,10 @@
         <v-card-text class="pt-4">
             <ValidationObserver ref="observer">
                 <ValidationProvider v-slot="{ errors, failed }" name="Recherche" rules="min:3">
-                    <v-text-field v-show="type !== 'Tags'" v-model="search" outlined dense :hide-details="!failed" label="Rechercher dans le forum" :error-messages="errors" />
+                    <v-text-field v-show="type !== 'Tags'" @keyup.enter="submit()" v-model="search" outlined dense :hide-details="!failed" label="Rechercher dans le forum" :error-messages="errors" />
                 </ValidationProvider>
 
-                <v-select v-show="type === 'Tags'" v-model="selectedTags" :items="tags" item-value="Id" item-text="Name" label="Tags" hide-details :menu-props="{ offsetY: true }" multiple outlined dense />
+                <TagsSelect v-show="type === 'Tags'" v-model="selectedTags" :tags="tags" placeholder="Tags" />
 
                 <ValidationProvider v-slot="{ errors, failed }" name="Type" rules="required">
                     <v-select v-model="type" :items="types" :menu-props="{ offsetY: true }" outlined dense :hide-details="!failed" class="mt-2" label="Type de la recherche" :error-messages="errors" />
@@ -25,8 +25,14 @@
 </template>
 
 <script>
+import TagsSelect from '../../widgets/TagsSelect';
+
 export default {
     name: 'SearchMenu',
+
+    components: {
+        TagsSelect
+    },
 
     props: {
         tags: { type: Array, default: () => [] }

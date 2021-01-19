@@ -2,18 +2,33 @@
     <v-card :class="{ 'pinned': post.Post.Pinned, 'owned': isPostMadeByConnectedUser }" outlined>
         <v-card-title class="py-0">
             <span class="mr-4">
-                <v-img v-if="post.User === null || post.User.ProfilePicture === null" src="@/assets/larry.png" width="40" height="40" />
-                <v-img v-if="post.User !== null && post.User.ProfilePicture !== null" :src="post.User.ProfilePicture" width="40" height="40" />
+                <router-link :to="`/users/${post.User.Name}`">
+                    <v-menu offset-y offset-x top open-on-hover nudge-width="400">
+                        <template v-slot:activator="{ on }">
+                            <v-avatar v-on="on">
+                                <v-img v-if="post.User.ProfilePicture === null" src="@/assets/larry.png" />
+                                <v-img v-if="post.User.ProfilePicture !== null" :src="post.User.ProfilePicture" />
+                            </v-avatar>
+                        </template>
+                        <AccountMenu :user="post.User" />
+                    </v-menu>
+                </router-link>
             </span>
 
             <span>
-                <router-link v-if="post.User !== null" :to="`/users/${post.User.Name}`" class="no-text-decoration" :class="getUserClass(post.User)">
-                    {{ getPostAuthorName() }}
+                <router-link :to="`/users/${post.User.Name}`" class="no-text-decoration" :class="getUserClass(post.User)">
+                    <v-menu offset-y offset-x top open-on-hover>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on">
+                                {{ post.User.Name }}
+                            </span>
+                        </template>
+                        <AccountMenu :user="post.User" />
+                    </v-menu>
                 </router-link>
-                <span v-else :class="getUserClass(post.User)">
-                    {{ getPostAuthorName() }}
-                </span>
+
                 <br>
+
                 <span class="caption grey--text">
                     {{ post.Post.CreationDate | postDate() }}
                 </span>
@@ -100,7 +115,7 @@
 
         <v-row class="px-5" style="margin-bottom: -16px" v-show="!editMode">
             <v-col>
-                <div v-html="parseJvcode(post.Post.Content)"> </div>
+                <div ref="postContent" v-html="parseJvcode(post.Post.Content)"> </div>
             </v-col>
         </v-row>
 
@@ -124,12 +139,16 @@
 import { parse } from 'hidden-jvc-jvcode';
 
 import TextEditor from '../../TextEditor';
+import AccountMenu from './AccountMenu';
+
+import initBlockquote from '../../../helpers/initBlockquote';
 
 export default {
     name: 'HiddenPost',
 
     components: {
-        TextEditor
+        TextEditor,
+        AccountMenu
     },
 
     props: {
@@ -311,6 +330,12 @@ export default {
         parseJvcode(content) {
             return parse(content);
         }
+    },
+
+    created() {
+        this.$nextTick(() => {
+            initBlockquote(this.$refs.postContent);
+        });
     }
 };
 </script>

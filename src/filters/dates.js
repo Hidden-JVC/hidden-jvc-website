@@ -4,6 +4,10 @@ import { fr } from 'date-fns/locale';
 
 const current = new Date();
 
+Vue.filter('dateFormat', (str) => {
+    return format(new Date(str), 'dd/MM/yyyy', { locale: fr });
+});
+
 Vue.filter('topicLastPostDate', (str) => {
     const date = new Date(str);
     if (isSameDay(current, date)) {

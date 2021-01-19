@@ -2,22 +2,22 @@
     <div>
         <v-card class="mb-4" outlined>
             <v-card-title>
-                <v-btn-toggle class="mr-4 mb-2 mb-lg-0">
-                    <v-btn small>
+                <v-item-group class="mr-4 mb-2 mb-lg-0 v-btn-toggle">
+                    <v-btn @click="editorEmphasis('**')" small>
                         <v-icon small> fas fa-bold </v-icon>
                     </v-btn>
-                    <v-btn small>
+                    <v-btn @click="editorEmphasis('*')" small>
                         <v-icon small> fas fa-italic </v-icon>
                     </v-btn>
-                    <v-btn small>
+                    <v-btn @click="editorEmphasis('<ins>', '</ins>')" small>
                         <v-icon small> fas fa-underline </v-icon>
                     </v-btn>
-                    <v-btn small>
+                    <v-btn @click="editorEmphasis('~~')" small>
                         <v-icon small> fas fa-strikethrough </v-icon>
                     </v-btn>
-                </v-btn-toggle>
+                </v-item-group>
 
-                <v-btn-toggle class="mr-4 mb-2 mb-lg-0">
+                <v-item-group class="mr-4 mb-2 mb-lg-0 v-btn-toggle">
                     <v-btn small>
                         <v-icon small> fas fa-list-ul </v-icon>
                     </v-btn>
@@ -30,12 +30,12 @@
                     <v-btn small>
                         <v-icon small> fas fa-code </v-icon>
                     </v-btn>
-                    <v-btn small>
+                    <v-btn @click="editorEmphasis('<spoil>', '</spoil>')" small>
                         <v-icon small> fas fa-eye-slash </v-icon>
                     </v-btn>
-                </v-btn-toggle>
+                </v-item-group>
 
-                <v-btn-toggle class="mr-4 mb-2 mb-lg-0">
+                <v-item-group class="mr-4 mb-2 mb-lg-0 v-btn-toggle">
                     <v-btn small>
                         <v-icon small> fas fa-smile </v-icon>
                     </v-btn>
@@ -45,7 +45,7 @@
                     <v-btn small target="_blank" href="https://marked.js.org/demo/?text=Marked%20-%20Markdown%20Parser%0A%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%0A%5BMarked%5D%20lets%20you%20convert%20%5BMarkdown%5D%20into%20HTML.%20%20Markdown%20is%20a%20simple%20text%20format%20whose%20goal%20is%20to%20be%20very%20easy%20to%20read%20and%20write%2C%20even%20when%20not%20converted%20to%20HTML.%20%20This%20demo%20page%20will%20let%20you%20type%20anything%20you%20like%20and%20see%20how%20it%20gets%20converted.%20%20Live.%20%20No%20more%20waiting%20around.%0A%0AHow%20To%20Use%20The%20Demo%0A-------------------%0A%0A1.%20Type%20in%20stuff%20on%20the%20left.%0A2.%20See%20the%20live%20updates%20on%20the%20right.%0A%0AThat%27s%20it.%20%20Pretty%20simple.%20%20There%27s%20also%20a%20drop-down%20option%20in%20the%20upper%20right%20to%20switch%20between%20various%20views%3A%0A%0A-%20**Preview%3A**%20%20A%20live%20display%20of%20the%20generated%20HTML%20as%20it%20would%20render%20in%20a%20browser.%0A-%20**HTML%20Source%3A**%20%20The%20generated%20HTML%20before%20your%20browser%20makes%20it%20pretty.%0A-%20**Lexer%20Data%3A**%20%20What%20%5Bmarked%5D%20uses%20internally%2C%20in%20case%20you%20like%20gory%20stuff%20like%20this.%0A-%20**Quick%20Reference%3A**%20%20A%20brief%20run-down%20of%20how%20to%20format%20things%20using%20markdown.%0A%0AWhy%20Markdown%3F%0A-------------%0A%0AIt%27s%20easy.%20%20It%27s%20not%20overly%20bloated%2C%20unlike%20HTML.%20%20Also%2C%20as%20the%20creator%20of%20%5Bmarkdown%5D%20says%2C%0A%0A%3E%20The%20overriding%20design%20goal%20for%20Markdown%27s%0A%3E%20formatting%20syntax%20is%20to%20make%20it%20as%20readable%0A%3E%20as%20possible.%20The%20idea%20is%20that%20a%0A%3E%20Markdown-formatted%20document%20should%20be%0A%3E%20publishable%20as-is%2C%20as%20plain%20text%2C%20without%0A%3E%20looking%20like%20it%27s%20been%20marked%20up%20with%20tags%0A%3E%20or%20formatting%20instructions.%0A%0AReady%20to%20start%20writing%3F%20%20Either%20start%20changing%20stuff%20on%20the%20left%20or%0A%5Bclear%20everything%5D(%2Fdemo%2F%3Ftext%3D)%20with%20a%20simple%20click.%0A%0A%5BMarked%5D%3A%20https%3A%2F%2Fgithub.com%2Fmarkedjs%2Fmarked%2F%0A%5BMarkdown%5D%3A%20http%3A%2F%2Fdaringfireball.net%2Fprojects%2Fmarkdown%2F%0A&options=&version=master">
                         <v-icon small> fas fa-question-circle </v-icon>
                     </v-btn>
-                </v-btn-toggle>
+                </v-item-group>
 
                 <v-img src="@/assets/risibank.png" width="96.25" height="17.5" class="cursor-pointer" contain @click="showRisibank = !showRisibank" />
             </v-card-title>
@@ -120,17 +120,27 @@
         </v-card>
 
         <ValidationProvider v-slot="{ errors }" name="Message" :rules="required ? 'required' : null">
-            <v-textarea v-model="content" @change="$emit('input', content)" ref="textarea" :error-messages="errors" counter outlined />
+            <v-textarea v-model="content" @change="$emit('input', content)" ref="textarea" :error-messages="errors" hide-details outlined />
         </ValidationProvider>
 
-        <v-card class="mb-4" outlined>
-            <div class="preview" v-html="preview"> </div>
-        </v-card>
+        <v-row>
+            <v-col cols="2" offset="10">
+                <v-switch v-model="previewEnabled" label="Aperçu" class="mt-0 pt-0" hide-details inset dense />
+            </v-col>
+        </v-row>
+
+        <v-expand-transition>
+            <v-card v-show="previewEnabled" class=" mb-4" outlined>
+                <div class="preview" v-html="preview"> </div>
+            </v-card>
+        </v-expand-transition>
     </div>
 </template>
 
 <script>
 import { parse } from 'hidden-jvc-jvcode';
+
+import initBlockquote from '../helpers/initBlockquote';
 
 export default {
     name: 'TextEditor',
@@ -147,7 +157,8 @@ export default {
             risibank: null,
             showRisibank: true,
             risibankSearchResult: null,
-            risibankSearch: ''
+            risibankSearch: '',
+            previewEnabled: true
         };
     },
 
@@ -177,6 +188,10 @@ export default {
 
         preview() {
             return parse(this.content);
+        },
+
+        textarea() {
+            return this.$refs.textarea.$refs.input;
         }
     },
 
@@ -207,29 +222,28 @@ export default {
 
         appendText(text) {
             this.content += text;
+            this.textarea.focus();
         },
 
         addSticker(stickerUrl) {
-            const textarea = this.$refs.textarea.$refs.input;
+            if (this.textarea.selectionStart || this.textarea.selectionStart == '0') {
+                const start = this.textarea.selectionStart;
+                const end = this.textarea.selectionEnd;
 
-            if (textarea.selectionStart || textarea.selectionStart == '0') {
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-
-                const before = textarea.value.substring(0, start);
-                // const selected = textarea.value.substring(start, end);
-                const after = textarea.value.substring(end, textarea.value.length);
+                const before = this.textarea.value.substring(0, start);
+                // const selected = this.textarea.value.substring(start, end);
+                const after = this.textarea.value.substring(end, this.textarea.value.length);
 
                 this.content = `${before} ${stickerUrl} ${after}`;
 
                 setTimeout(() => {
-                    textarea.focus();
+                    this.textarea.focus();
                     const cursorPosition = before.length + stickerUrl.length + 1;
-                    textarea.setSelectionRange(cursorPosition, cursorPosition);
+                    this.textarea.setSelectionRange(cursorPosition, cursorPosition);
                 }, 0);
             } else {
                 this.content += stickerUrl;
-                textarea.focus();
+                this.textarea.focus();
             }
 
             this.$emit('input', this.content);
@@ -241,6 +255,42 @@ export default {
 
         removeSticker(stickerUrl) {
             this.$store.commit('user/removeFavoriteStickers', stickerUrl);
+        },
+
+        editorEmphasis(str, endStr) {
+            if (!endStr) {
+                endStr = str;
+            }
+            const start = this.textarea.selectionStart;
+            const end = this.textarea.selectionEnd;
+
+            const before = this.content.substring(0, start);
+            const selected = this.content.substring(start, end);
+            const after = this.content.substring(end, this.content.length);
+
+            let cursorPosition = 0;
+
+            if (this.textarea.selectionStart === this.textarea.selectionEnd) {
+                this.content = `${before}${str}${endStr}${after}`;
+                cursorPosition = before.length + str.length;
+            } else {
+                this.content = `${before}${str}${selected}${endStr}${after}`;
+                cursorPosition = before.length + str.length + selected.length;
+            }
+
+            this.textarea.focus();
+            setTimeout(() => {
+                this.textarea.selectionEnd = cursorPosition;
+            }, 0);
+        }
+    },
+
+    watch: {
+        content() {
+            this.$nextTick(() => {
+                const preview = document.querySelector('.preview');
+                initBlockquote(preview);
+            });
         }
     },
 
@@ -265,9 +315,5 @@ export default {
 .preview {
     min-height: 158px;
     padding: 5px;
-}
-
-.cursor-pointer {
-    cursor: pointer;
 }
 </style>
