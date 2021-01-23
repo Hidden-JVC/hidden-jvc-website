@@ -1,3 +1,5 @@
+import { IS_EXTENSION } from '../constants';
+
 export default {
     namespaced: true,
 
@@ -7,7 +9,6 @@ export default {
         jwt: null,
         isAdmin: false,
         moderators: [],
-        anonymousName: 'Anonymous',
         favoriteStickers: []
     },
 
@@ -34,7 +35,7 @@ export default {
             state.isAdmin = data.isAdmin;
             state.moderators = data.moderators;
 
-            if (window.chrome) {
+            if (IS_EXTENSION) {
                 window.chrome.storage.local.get({ state: null }, function (result) {
                     if (result.state) {
                         result.state.user.jwt = data.jwt;
@@ -52,11 +53,6 @@ export default {
                 localStorage.setItem('user/isAdmin', data.isAdmin);
                 localStorage.setItem('user/moderators', JSON.stringify(data.moderators));
             }
-        },
-
-        setAnonymousName(state, name) {
-            state.anonymousName = name;
-            localStorage.setItem('user/anonymousName', name);
         },
 
         addFavoriteStickers(state, stickerUrl) {
@@ -78,7 +74,7 @@ export default {
             state.isAdmin = null;
             state.moderators = [];
 
-            if (window.chrome) {
+            if (IS_EXTENSION) {
                 window.chrome.storage.local.get({ state: null }, function (result) {
                     if (result.state) {
                         result.state.user.jwt = null;
@@ -99,7 +95,7 @@ export default {
         },
 
         loadFromLocalStorage(state) {
-            if (window.chrome) {
+            if (IS_EXTENSION) {
                 window.chrome.storage.local.get({ state: null }, function (result) {
                     if (result.state) {
                         state.userId = result.state.user.userId;
@@ -107,7 +103,6 @@ export default {
                         state.jwt = result.state.user.jwt;
                         state.isAdmin = result.state.user.isAdmin;
                         state.moderators = result.state.user.moderators;
-                        state.anonymousName = result.state.user.anonymousName;
                         state.favoriteStickers = result.state.user.favoriteStickers;
                     }
                 });
@@ -135,11 +130,6 @@ export default {
                 const moderators = localStorage.getItem('user/moderators');
                 if (moderators !== null) {
                     state.moderators = JSON.parse(moderators);
-                }
-
-                const anonymousName = localStorage.getItem('user/anonymousName');
-                if (anonymousName !== null) {
-                    state.anonymousName = anonymousName;
                 }
 
                 const favoriteStickers = localStorage.getItem('user/favoriteStickers');

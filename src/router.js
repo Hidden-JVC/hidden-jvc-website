@@ -52,6 +52,10 @@ const router = new VueRouter({
             component: () => import(/* webpackChunkName: "Logs" */ './views/Logs.vue')
         },
         {
+            path: '/parametres',
+            component: () => import(/* webpackChunkName: "Settings" */ './views/Settings.vue')
+        },
+        {
             path: '*',
             component: () => import(/* webpackChunkName: "NotFound" */ './views/NotFound.vue')
         }

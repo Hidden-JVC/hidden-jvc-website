@@ -47,11 +47,11 @@
                     </v-btn>
                 </v-item-group>
 
-                <v-img src="@/assets/risibank.png" width="96.25" height="17.5" class="cursor-pointer" contain @click="showRisibank = !showRisibank" />
+                <v-img src="@/assets/risibank.png" width="96.25" height="17.5" class="cursor-pointer" contain @click="risibankOpen = !risibankOpen" />
             </v-card-title>
 
             <v-expand-transition>
-                <div v-show="showRisibank">
+                <div v-show="risibankOpen">
                     <v-divider />
 
                     <v-tabs v-model="risibankTab" fixed-tabs>
@@ -155,7 +155,7 @@ export default {
             content: this.value,
             risibankTab: 1,
             risibank: null,
-            showRisibank: true,
+            risibankOpen: this.$store.state.settings.risibankOpen,
             risibankSearchResult: null,
             risibankSearch: '',
             previewEnabled: true
@@ -197,9 +197,18 @@ export default {
 
     methods: {
         async fetchRisibank() {
+            const start = performance.now();
             const response = await fetch('https://api.risibank.fr/api/v0/load');
+            const end = performance.now();
+            console.log(`Stickers Risibank récupérés en ${(end - start) / 1000}s`);
             const result = await response.json();
             this.risibank = result.stickers;
+
+            for (const key in this.risibank) {
+                for (const sticker of this.risibank[key]) {
+                    sticker.risibank_link = sticker.risibank_link.replace('http://', 'https://');
+                }
+            }
         },
 
         async fetchRisibankSearch() {

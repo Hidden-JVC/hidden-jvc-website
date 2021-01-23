@@ -43,7 +43,7 @@
                             </v-col>
 
                             <v-col cols="12" lg="8">
-                                <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" @input="fetchTopic()" dense />
+                                <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" dense />
                             </v-col>
 
                             <v-col cols="12" lg="2">
@@ -63,7 +63,7 @@
                             </v-col>
 
                             <v-col cols="12" lg="8">
-                                <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" @input="fetchTopic()" />
+                                <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" dense />
                             </v-col>
 
                             <v-col cols="12" lg="2">
@@ -88,7 +88,7 @@
 
                     <v-col cols="12" lg="4">
                         <UserListMenu :forumId="forum.Forum.Id" class="mb-4" />
-                        <InformationsMenu class="mb-4" :forum="forum" :topic="topic" :moderators="forum.Moderators" @reload-topic="fetchTopic()"/>
+                        <InformationsMenu class="mb-4" :forum="forum" :topic="topic" :moderators="forum.Moderators" @reload-topic="fetchTopic()" />
                     </v-col>
                 </v-row>
             </v-card>
@@ -152,18 +152,44 @@ export default {
 
         displayUpdateTitleButton() {
             return this.topic.Author && this.topic.Author.Id === this.$store.state.user.userId;
+        },
+
+        query() {
+            const query = {};
+
+            if (this.page !== 1) {
+                query.page = this.page;
+            }
+
+            if (this.userId !== null) {
+                query.userId = this.userId;
+            }
+
+            return query;
         }
     },
 
     methods: {
+        doPush(query) {
+            return !Object.keys(query).every((key) => query[key] === this.$route.query[key]);
+            // for (const key of query) {
+            //     // if(query[key] === this.$route.query[key])
+            //     // if(Object.prototype.hasOwnProperty.call(this.$route.query, key) && )
+            // }
+        },
+
         async fetchTopic() {
             try {
                 this.setLoading(true);
 
+                if (this.doPush(this.query)) {
+                    this.$router.push({ query: this.query });
+                }
+
                 if (this.forum === null) {
                     const { forum, error } = await this.repos.hidden.getForum(this.$route.params.forumId);
                     if (error) {
-                        this.openErrorDialog(error);
+                        return this.openErrorDialog(error);
                     } else {
                         this.forum = forum;
                     }
@@ -171,7 +197,7 @@ export default {
 
                 const { topic, error } = await this.repos.hidden.getTopic(this.$route.params.topicId, this.page, this.userId);
                 if (error) {
-                    this.openErrorDialog(error);
+                    return this.openErrorDialog(error);
                 } else {
                     this.topic = topic;
                     this.titleInput = topic.Topic.Title;
@@ -242,7 +268,25 @@ export default {
         }
     },
 
+    watch: {
+        query() {
+            console.log('query');
+            this.fetchTopic();
+        },
+        $route(to) {
+            console.log('navigation');
+            if (to.query.page) {
+                this.page = parseInt(to.query.page);
+            }
+            this.fetchTopic();
+        }
+    },
+
     created() {
+        if (this.$route.query.page) {
+            this.page = parseInt(this.$route.query.page);
+        }
+
         this.fetchTopic();
     }
 };

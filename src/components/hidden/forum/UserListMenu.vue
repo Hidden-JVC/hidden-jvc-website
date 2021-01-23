@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import getConnectedUsersCount from '../../../helpers/getConnectedUsersCount';
+
 export default {
     name: 'UserListMenu',
 
@@ -50,7 +52,7 @@ export default {
 
     methods: {
         async fetchUsersCount() {
-            const { forumCount, forumUsers } = await this.getConnectedUsersCount(this.forumId);
+            const { forumCount, forumUsers } = await getConnectedUsersCount(this.$store.state.user.jwt, this.forumId);
             this.forumCount = forumCount;
             for (const user of forumUsers) {
                 if (Object.keys(user).length > 0) {

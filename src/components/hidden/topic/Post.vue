@@ -1,5 +1,5 @@
 <template>
-    <v-card :class="{ 'pinned': post.Post.Pinned, 'owned': isPostMadeByConnectedUser }" outlined>
+    <v-card :class="{ 'pinned': post.Post.Pinned, 'owned': $store.state.settings.highlightUserMessages && isPostMadeByConnectedUser }" outlined>
         <v-card-title class="py-0">
             <span class="mr-4">
                 <router-link :to="`/users/${post.User.Name}`">

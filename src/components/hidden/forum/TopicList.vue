@@ -26,7 +26,7 @@
                                 {{ topic.Topic.Title }}
                             </router-link>
 
-                            <template v-if="$store.state.application.displayForumTags">
+                            <template v-if="$store.state.settings.displayTopicTags">
                                 <v-chip class="ml-2" v-for="tag of topic.Tags" :key="tag.Name" :color="tag.Color" label small>
                                     {{ tag.Name }} <v-icon v-if="tag.Locked" x-small right> fas fa-lock </v-icon>
                                 </v-chip>

@@ -65,7 +65,7 @@
             <v-list class="py-0">
                 <v-divider />
 
-                <v-list-item to="/settings">
+                <v-list-item to="/parametres">
                     <v-list-item-action>
                         <v-icon> fas fa-cog </v-icon>
                     </v-list-item-action>

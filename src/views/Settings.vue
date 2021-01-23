@@ -28,7 +28,7 @@
 
                     <v-card-text>
                         <v-row>
-                            <v-checkbox v-model="displayForumTags" label="Surligner mes posts en bleu" />
+                            <v-checkbox v-model="highlightUserMessages" label="Mettre en valeur mes messages" />
                         </v-row>
                     </v-card-text>
                 </v-card>
@@ -46,7 +46,7 @@
 
                     <v-card-text>
                         <v-row>
-                            <v-checkbox v-model="displayForumTags" label="Afficher risibank par défaut" />
+                            <v-checkbox v-model="risibankOpen" label="Afficher risibank par défaut" />
                         </v-row>
                     </v-card-text>
                 </v-card>
@@ -66,11 +66,34 @@ export default {
     computed: {
         displayForumTags: {
             get() {
-                return this.$store.state.application.displayForumTags;
+                return this.$store.state.settings.displayTopicTags;
             },
 
             set(displayForumTags) {
-                return this.$store.commit('application/setDisplayForumTags', displayForumTags);
+                this.$store.commit('settings/setDisplayTopicTags', displayForumTags);
+                this.$store.commit('settings/save');
+            }
+        },
+
+        highlightUserMessages: {
+            get() {
+                return this.$store.state.settings.highlightUserMessages;
+            },
+
+            set(highlightUserMessages) {
+                this.$store.commit('settings/setHighlightUserMessages', highlightUserMessages);
+                this.$store.commit('settings/save');
+            }
+        },
+
+        risibankOpen: {
+            get() {
+                return this.$store.state.settings.risibankOpen;
+            },
+
+            set(risibankOpen) {
+                this.$store.commit('settings/setRisibankOpen', risibankOpen);
+                this.$store.commit('settings/save');
             }
         }
     }

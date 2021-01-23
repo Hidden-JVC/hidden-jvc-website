@@ -104,22 +104,13 @@ export default {
             try {
                 this.setLoading(true);
 
+                const start = performance.now();
                 if (this.forum === null) {
                     const { forum, error } = await this.repos.hidden.getForum(this.$route.params.forumId);
                     if (error) {
                         this.openErrorDialog(error);
                     } else {
                         this.forum = forum;
-
-                        // const name = forum.Forum.Name
-                        //     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-                        //     .split(' ')
-                        //     .map((e) => e.replace(/\W/g, ''))
-                        //     .filter((e) => e.length > 0)
-                        //     .join('-')
-                        //     .toLowerCase();
-
-                        // this.$router.replace(`/forums/${this.forum.Forum.Id}/hidden-` + name);
                     }
                 }
 
@@ -134,6 +125,10 @@ export default {
                 }
 
                 const { topics, count, error } = await this.repos.hidden.getTopics(query);
+
+                const end = performance.now();
+                console.log(`Topics récupérés en ${(end - start) / 1000}s`);
+
                 if (error) {
                     this.openErrorDialog(error);
                 } else {
