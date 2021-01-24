@@ -142,6 +142,7 @@ import TextEditor from '../../TextEditor';
 import AccountMenu from './AccountMenu';
 
 import initBlockquote from '../../../helpers/initBlockquote';
+import initEmbedMedia from '../../../helpers/initEmbedMedia';
 
 export default {
     name: 'HiddenPost',
@@ -335,6 +336,7 @@ export default {
     created() {
         this.$nextTick(() => {
             initBlockquote(this.$refs.postContent);
+            initEmbedMedia(this.$refs.postContent);
         });
     }
 };

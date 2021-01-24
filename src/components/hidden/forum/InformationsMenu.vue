@@ -17,11 +17,17 @@
             <template v-else>
                 Aucun modérateurs
             </template>
+
+            <br> <br>
+
+            <Logs />
         </v-card-text>
     </v-card>
 </template>
 
 <script>
+import Logs from '../../misc/Logs';
+
 export default {
     name: 'InformationsMenu',
 
@@ -30,6 +36,10 @@ export default {
             required: true,
             type: Array
         }
+    },
+
+    components: {
+        Logs
     }
 };
 </script>

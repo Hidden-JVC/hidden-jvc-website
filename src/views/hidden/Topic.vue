@@ -43,7 +43,7 @@
                             </v-col>
 
                             <v-col cols="12" lg="8">
-                                <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" dense />
+                                <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" @input="fetchTopic()" dense />
                             </v-col>
 
                             <v-col cols="12" lg="2">
@@ -63,7 +63,7 @@
                             </v-col>
 
                             <v-col cols="12" lg="8">
-                                <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" dense />
+                                <v-pagination v-model="page" :total-visible="$vuetify.breakpoint.mobile ? 5 : 9" :length="paginationLength" @input="fetchTopic()" dense />
                             </v-col>
 
                             <v-col cols="12" lg="2">
@@ -87,8 +87,8 @@
                     </v-col>
 
                     <v-col cols="12" lg="4">
-                        <UserListMenu :forumId="forum.Forum.Id" class="mb-4" />
                         <InformationsMenu class="mb-4" :forum="forum" :topic="topic" :moderators="forum.Moderators" @reload-topic="fetchTopic()" />
+                        <UserListMenu :forumId="forum.Forum.Id" class="mb-4" />
                     </v-col>
                 </v-row>
             </v-card>
@@ -117,6 +117,7 @@ export default {
         topic: null,
 
         userId: null,
+        disableNavigation: false,
 
         page: 1,
         limit: 20,
@@ -152,9 +153,11 @@ export default {
 
         displayUpdateTitleButton() {
             return this.topic.Author && this.topic.Author.Id === this.$store.state.user.userId;
-        },
+        }
+    },
 
-        query() {
+    methods: {
+        buildQuery() {
             const query = {};
 
             if (this.page !== 1) {
@@ -166,24 +169,26 @@ export default {
             }
 
             return query;
-        }
-    },
-
-    methods: {
-        doPush(query) {
-            return !Object.keys(query).every((key) => query[key] === this.$route.query[key]);
-            // for (const key of query) {
-            //     // if(query[key] === this.$route.query[key])
-            //     // if(Object.prototype.hasOwnProperty.call(this.$route.query, key) && )
-            // }
         },
 
-        async fetchTopic() {
-            try {
-                this.setLoading(true);
+        doPush(query) {
+            return (Object.keys(query).length !== Object.keys(this.$route.query).length) || !Object.keys(query).every((key) => query[key] === this.$route.query[key]);
+        },
 
-                if (this.doPush(this.query)) {
-                    this.$router.push({ query: this.query });
+        parseQuery(query) {
+            this.page = parseInt(query.page) || 1;
+            this.userId = parseInt(query.userId) || null;
+        },
+
+        async fetchTopic(push = true) {
+            try {
+                const start = performance.now();
+                this.setLoading(true);
+                this.disableNavigation = true;
+
+                const query = this.buildQuery();
+                if (push && this.doPush(query)) {
+                    this.$router.push({ query });
                 }
 
                 if (this.forum === null) {
@@ -203,11 +208,14 @@ export default {
                     this.titleInput = topic.Topic.Title;
                     this.postsCount = this.topic.PostsCount;
                 }
+                const end = performance.now();
+                this.$store.commit('application/pushLog', `Messages récupérés en ${(end - start) / 1000}s`);
             } catch (err) {
                 this.openErrorDialog('Une erreur est survenue lors de la récupération du topic');
                 console.error(err);
             } finally {
                 this.setLoading(false);
+                this.disableNavigation = false;
             }
         },
 
@@ -269,24 +277,16 @@ export default {
     },
 
     watch: {
-        query() {
-            console.log('query');
-            this.fetchTopic();
-        },
         $route(to) {
-            console.log('navigation');
-            if (to.query.page) {
-                this.page = parseInt(to.query.page);
+            if (!this.disableNavigation) {
+                this.parseQuery(to.query);
+                this.fetchTopic(false);
             }
-            this.fetchTopic();
         }
     },
 
     created() {
-        if (this.$route.query.page) {
-            this.page = parseInt(this.$route.query.page);
-        }
-
+        this.parseQuery(this.$route.query);
         this.fetchTopic();
     }
 };

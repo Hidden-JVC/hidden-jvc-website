@@ -54,9 +54,9 @@
                     </v-col>
 
                     <v-col cols="12" md="4">
+                        <InformationsMenu class="mb-4" :forumId="forum.Forum.Id" :moderators="forum.Moderators" />
                         <UserListMenu :forumId="forum.Forum.Id" class="mb-4" />
                         <SearchMenu class="mb-4" @search="makeSearch" :tags="forum.Tags" />
-                        <InformationsMenu class="mb-4" :forumId="forum.Forum.Id" :moderators="forum.Moderators" />
                     </v-col>
                 </v-row>
             </v-card>
@@ -127,7 +127,7 @@ export default {
                 const { topics, count, error } = await this.repos.hidden.getTopics(query);
 
                 const end = performance.now();
-                console.log(`Topics récupérés en ${(end - start) / 1000}s`);
+                this.$store.commit('application/pushLog', `Topics récupérés en ${(end - start) / 1000}s`);
 
                 if (error) {
                     this.openErrorDialog(error);

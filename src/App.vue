@@ -31,7 +31,7 @@ export default {
     },
 
     created() {
-        this.$store.commit('user/loadFromLocalStorage');
+        this.$store.commit('user/load');
         this.$store.commit('settings/load');
     }
 };

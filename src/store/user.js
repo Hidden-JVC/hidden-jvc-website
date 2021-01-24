@@ -94,7 +94,7 @@ export default {
             }
         },
 
-        loadFromLocalStorage(state) {
+        load(state) {
             if (IS_EXTENSION) {
                 window.chrome.storage.local.get({ state: null }, function (result) {
                     if (result.state) {

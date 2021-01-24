@@ -38,17 +38,23 @@
             <template v-else>
                 Aucun modérateurs
             </template>
+
+            <br> <br>
+
+            <Logs />
         </v-card-text>
     </v-card>
 </template>
 
 <script>
+import Logs from '../../misc/Logs';
 import TagsSelect from '../../widgets/TagsSelect';
 
 export default {
     name: 'InformationsMenu',
 
     components: {
+        Logs,
         TagsSelect
     },
 

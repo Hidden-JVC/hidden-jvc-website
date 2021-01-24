@@ -1,11 +1,14 @@
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+
 export default {
     namespaced: true,
 
     state: {
         loading: false,
-        displayForumTags: true,
         errorDialogOpen: false,
-        errorDialogMessage: ''
+        errorDialogMessage: '',
+        logs: []
     },
 
     mutations: {
@@ -23,8 +26,9 @@ export default {
             state.errorDialogMessage = '';
         },
 
-        setDisplayForumTags(state, displayForumTags) {
-            state.displayForumTags = typeof displayForumTags === 'boolean' ? displayForumTags : true;
+        pushLog(state, log) {
+            const hours = format(new Date(), 'kk:mm:ss', { locale: fr });
+            state.logs.push(`${hours} - ${log}`);
         }
     }
 };
