@@ -17,7 +17,7 @@
 
             <span>
                 <router-link :to="`/users/${post.User.Name}`" class="no-text-decoration" :class="getUserClass(post.User)">
-                    <v-menu offset-y offset-x top open-on-hover>
+                    <v-menu offset-y offset-x top open-on-hover nudge-width="400">
                         <template v-slot:activator="{ on }">
                             <span v-on="on">
                                 {{ post.User.Name }}
@@ -29,7 +29,7 @@
 
                 <br>
 
-                <span class="caption grey--text">
+                <span class="caption" :class="{ 'grey--text': !isPemt, 'green--text': isPemt }">
                     {{ post.Post.CreationDate | postDate() }}
                 </span>
             </span>
@@ -143,6 +143,7 @@ import AccountMenu from './AccountMenu';
 
 import initBlockquote from '../../../helpers/initBlockquote';
 import initEmbedMedia from '../../../helpers/initEmbedMedia';
+import initCode from '../../../helpers/initCode';
 
 export default {
     name: 'HiddenPost',
@@ -155,7 +156,8 @@ export default {
     props: {
         post: { required: true },
         topic: { required: true },
-        forum: { required: true }
+        forum: { required: true },
+        isPemt: { default: false }
     },
 
     data() {
@@ -337,6 +339,7 @@ export default {
         this.$nextTick(() => {
             initBlockquote(this.$refs.postContent);
             initEmbedMedia(this.$refs.postContent);
+            initCode(this.$refs.postContent);
         });
     }
 };

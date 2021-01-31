@@ -22,7 +22,7 @@
                         </td>
 
                         <td>
-                            <router-link :to="topicUrl(topic)">
+                            <router-link :to="getTopicUrl(topic)">
                                 {{ topic.Topic.Title }}
                             </router-link>
 
@@ -42,7 +42,9 @@
                         </td>
 
                         <td>
-                            {{ topic.LastPostDate | topicLastPostDate() }}
+                            <router-link :to="getTopicLastPage(topic)">
+                                {{ topic.LastPostDate | topicLastPostDate() }}
+                            </router-link>
                         </td>
 
                         <td v-if="displayModerationTools">
@@ -60,20 +62,19 @@
         </v-simple-table>
 
         <v-list id="forum-list" v-if="this.$vuetify.breakpoint.mobile" dense>
-            <v-list-item v-for="topic of topics" :key="topic.Id">
+            <v-list-item v-for="topic of topics" :key="topic.Id" :to="getTopicUrl(topic)">
                 <v-list-item-icon>
                     <v-icon :color="getIconInfo(topic).color" small> {{ getIconInfo(topic).icon }} </v-icon>
                 </v-list-item-icon>
 
                 <v-list-item-content class="pb-2">
                     <v-list-item-title class="mb-4">
-                        <router-link :to="topicUrl(topic)">
+                        <router-link :to="getTopicUrl(topic)">
                             {{ topic.Topic.Title }}
                         </router-link>
                         <span style="color: #748491">
                             ({{ topic.PostsCount }})
                         </span>
-
                     </v-list-item-title>
 
                     <v-list-item-subtitle>
@@ -141,10 +142,8 @@ export default {
             } else {
                 if (topic.Topic.Locked) {
                     return { color: 'blue-grey', icon: 'fas fa-lock' };
-
                 } else if (topic.PostsCount >= 20) {
                     return { color: 'red', icon: 'fas fa-folder' };
-
                 } else {
                     return { color: 'yellow darken-1', icon: 'fas fa-folder' };
                 }
@@ -155,9 +154,18 @@ export default {
             alert(topicId);
         },
 
-        topicUrl(topic) {
+        getTopicUrl(topic) {
             const title = textToUrl(topic.Topic.Title);
             return `/forums/${this.forum.Forum.Id}/hidden/${topic.Topic.Id}-` + title;
+        },
+
+        getTopicLastPage(topic) {
+            let lastPage = Math.ceil(topic.PostsCount / 20);
+            if (lastPage === 0 || isNaN(lastPage)) {
+                lastPage = 1;
+            }
+            const topicUrl = this.getTopicUrl(topic);
+            return `${topicUrl}?page=${lastPage}`;
         }
     }
 };
@@ -219,7 +227,7 @@ export default {
                     cursor: pointer;
                 }
 
-                &:nth-child(2) a {
+                &:nth-child(2) a, &:nth-child(5) a {
                     color: #4baeff;
                     text-decoration: none;
 

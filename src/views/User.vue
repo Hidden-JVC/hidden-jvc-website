@@ -1,61 +1,111 @@
 <template>
-    <v-container v-if="user !== null">
-        <v-row justify="center">
-            <v-col cols="6">
+    <div v-if="user !== null">
+        <v-row justify="center" no-gutters>
+            <v-col cols="12" xl="9">
                 <v-card>
-                    <v-card-title class="secondary">
-                        <span class="mx-auto">
-                            {{ user.User.Name }}
-                        </span>
-                    </v-card-title>
+                    <!-- <v-sheet color="#37383a" class="pa-4">
+                        <v-avatar :size="110" class="">
+                            <v-img v-if="user.User.ProfilePicture !== null" :src="user.User.ProfilePicture" />
+                            <v-img v-else src="@/assets/larry.png" />
+                        </v-avatar>
 
-                    <v-card-text class="pt-5">
-                        <v-row justify="center">
-                            <v-col cols="6">
-                                <v-img :src="user.User.ProfilePicture" />
+                        <div class=" ml-4">
+                            <h1 class="mb-4">
+                                {{ user.User.Name }}
+                            </h1>
+
+                            <v-tooltip top v-for="badge of user.Badges" :key="badge.Id">
+                                <template v-slot:activator="{ on }">
+                                    <v-chip label small class="mr-2" v-on="on"> {{ badge.Name }} </v-chip>
+                                </template>
+                                {{ badge.Description }}
+                            </v-tooltip>
+                        </div>
+                    </v-sheet>
+
+                    <v-row style="margin-left: 130px">
+                        <v-col class="py-0">
+                            <small> Membres depuis : </small> <br>
+                            <span class="white--text">
+                                {{ user.User.CreationDate | toDateStr() }}
+                                ({{ user.User.CreationDate | daysSinceDate() }} jours)
+                            </span>
+                        </v-col>
+
+                        <v-col class="py-0">
+                            <small> Messages </small> <br>
+                            <span class="white--text"> {{ user.User.PostCount }} </span>
+                        </v-col>
+
+                        <v-col class="py-0">
+                            <small> Dernière connexion </small> <br>
+                            <span class="white--text"> 12/01/2021 </span>
+                        </v-col>
+                    </v-row> -->
+
+                    <v-sheet color="#37383a" class="pa-4">
+                        <v-row>
+                            <v-col cols="2">
+                                <v-avatar :size="180" style="position: absolute">
+                                    <v-img v-if="user.User.ProfilePicture !== null" :src="user.User.ProfilePicture" />
+                                    <v-img v-else src="@/assets/larry.png" />
+                                </v-avatar>
                             </v-col>
 
-                            <v-col cols="6">
-                                <v-simple-table>
-                                    <template v-slot:default>
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <span class="text-bold">
-                                                        Membres depuis :
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    {{ user.User.CreationDate | toDateStr() }}
-                                                    ({{ user.User.CreationDate | daysSinceDate() }} jours)
-                                                </td>
-                                            </tr>
-                                        </tbody>
+                            <v-col>
+                                <h1 class="mb-4">
+                                    {{ user.User.Name }}
+                                </h1>
+
+                                <v-tooltip top v-for="badge of user.Badges" :key="badge.Id">
+                                    <template v-slot:activator="{ on }">
+                                        <v-chip label small class="mr-2" v-on="on"> {{ badge.Name }} </v-chip>
                                     </template>
-                                </v-simple-table>
+                                    {{ badge.Description }}
+                                </v-tooltip>
                             </v-col>
                         </v-row>
+                    </v-sheet>
 
-                        <h3> Badges </h3>
+                    <v-row class="mt-4 pa-4">
+                        <v-col class="py-0" offset="2">
+                            <small> Membres depuis </small> <br>
+                            <span class="white--text">
+                                {{ user.User.CreationDate | toDateStr() }}
+                                ({{ user.User.CreationDate | daysSinceDate() }} jours)
+                            </span>
+                        </v-col>
 
-                        <v-list>
-                            <v-list-item v-for="badge of user.Badges" :key="badge.Id">
-                                <v-list-item-icon>
-                                    <v-img src="@/assets/badges/BetaTester.png" width="60" height="60" />
-                                </v-list-item-icon>
-                                <v-list-item-content>
-                                    <v-list-item-title>
-                                        {{ badge.Name }}
-                                        ( {{ badge.AssociationDate | toDateStr() }} )
-                                    </v-list-item-title>
-                                </v-list-item-content>
-                            </v-list-item>
-                        </v-list>
-                    </v-card-text>
+                        <v-col class="py-0">
+                            <small> Messages </small> <br>
+                            <span class="white--text"> {{ user.User.PostCount }} </span>
+                        </v-col>
+
+                        <v-col class="py-0">
+                            <small> Dernière connexion </small> <br>
+                            <span class="white--text"> 12/01/2021 </span>
+                        </v-col>
+                    </v-row>
                 </v-card>
             </v-col>
         </v-row>
-    </v-container>
+
+        <v-row justify="center">
+            <v-col cols="12" xl="9">
+                <v-tabs fixed-tabs>
+                    <v-tab>
+                        Topics
+                    </v-tab>
+                    <v-tab>
+                        Messages
+                    </v-tab>
+                    <v-tab>
+                        DDB
+                    </v-tab>
+                </v-tabs>
+            </v-col>
+        </v-row>
+    </div>
 </template>
 
 <script>

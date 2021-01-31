@@ -53,7 +53,7 @@
 
                         <v-row class="post-list">
                             <v-col cols="12" v-for="post of topic.Posts" :key="post.Post.Id">
-                                <Post class="post-card" :post="post" :topic="topic" :forum="forum" @quote="quote" @reloadTopic="fetchTopic()" @fic-mode="ficMode" />
+                                <Post class="post-card" :post="post" :topic="topic" :forum="forum" :isPemt="pemtPosts.includes(post.Post.Id)" @quote="quote" @reloadTopic="fetchTopic()" @fic-mode="ficMode" />
                             </v-col>
                         </v-row>
 
@@ -153,6 +153,29 @@ export default {
 
         displayUpdateTitleButton() {
             return this.topic.Author && this.topic.Author.Id === this.$store.state.user.userId;
+        },
+
+        pemtPosts() {
+            const map = {};
+
+            for (const post of this.topic.Posts) {
+                const date = new Date(post.Post.CreationDate);
+                const seconds = Math.floor(date.getTime() / 1000);
+                if (!Object.prototype.hasOwnProperty.call(map, seconds)) {
+                    map[seconds] = [];
+                }
+                map[seconds].push(post.Post.Id);
+            }
+
+            let posts = [];
+
+            for (const key in map) {
+                if (map[key].length > 1) {
+                    posts = [...posts, ...map[key]];
+                }
+            }
+
+            return posts;
         }
     },
 
@@ -266,8 +289,12 @@ export default {
                 this.setLoading(true);
 
                 const topicId = parseInt(this.$route.params.topicId);
-                await this.repos.hidden.updateTopic(topicId, { title: this.titleInput });
-                this.fetchTopic();
+                const { error } = await this.repos.hidden.updateTopic(topicId, { title: this.titleInput });
+                if (error) {
+                    this.openErrorDialog(error);
+                } else {
+                    this.fetchTopic();
+                }
             } catch (err) {
                 console.error(err);
             } finally {

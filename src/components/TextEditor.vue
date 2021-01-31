@@ -18,16 +18,16 @@
                 </v-item-group>
 
                 <v-item-group class="mr-4 mb-2 mb-lg-0 v-btn-toggle">
-                    <v-btn small>
-                        <v-icon small> fas fa-list-ul </v-icon>
+                    <v-btn @click="editorPrepend('*')" small>
+                        <v-icon  small> fas fa-list-ul </v-icon>
                     </v-btn>
-                    <v-btn small>
-                        <v-icon small> fas fa-list-ol </v-icon>
+                    <v-btn @click="editorPrepend('1.')" small>
+                        <v-icon  small> fas fa-list-ol </v-icon>
                     </v-btn>
-                    <v-btn small>
-                        <v-icon small> fas fa-quote-left </v-icon>
+                    <v-btn @click="editorPrepend('>')" small>
+                        <v-icon  small> fas fa-quote-left </v-icon>
                     </v-btn>
-                    <v-btn small>
+                    <v-btn @click="editorEmphasis('```')" small>
                         <v-icon small> fas fa-code </v-icon>
                     </v-btn>
                     <v-btn @click="editorEmphasis('<spoil>', '</spoil>')" small>
@@ -39,7 +39,7 @@
                     <v-btn small target="_blank" href="https://www.jeuxvideo.com/jvcode/documentation.php#smiley">
                         <v-icon small> fas fa-smile </v-icon>
                     </v-btn>
-                    <v-btn small>
+                    <v-btn small target="_blank" href="https://www.noelshack.com/">
                         <v-icon small> fas fa-image </v-icon>
                     </v-btn>
                     <v-btn small target="_blank" href="https://www.markdownguide.org/basic-syntax/">
@@ -142,6 +142,7 @@ import { parse } from 'hidden-jvc-jvcode';
 
 import initBlockquote from '../helpers/initBlockquote';
 import initEmbedMedia from '../helpers/initEmbedMedia';
+import initCode from '../helpers/initCode';
 
 export default {
     name: 'TextEditor',
@@ -198,10 +199,7 @@ export default {
 
     methods: {
         async fetchRisibank() {
-            const start = performance.now();
             const response = await fetch('https://api.risibank.fr/api/v0/load');
-            const end = performance.now();
-            this.$store.commit('application/pushLog', `Stickers Risibank récupérés en ${(end - start) / 1000}s`);
             const result = await response.json();
             this.risibank = result.stickers;
 
@@ -233,6 +231,7 @@ export default {
         appendText(text) {
             this.content += text;
             this.textarea.focus();
+            this.textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
         },
 
         addSticker(stickerUrl) {
@@ -294,10 +293,31 @@ export default {
             }, 0);
         },
 
+        editorPrepend(str) {
+            const contents = [];
+            const cursorPosition = this.textarea.selectionStart;
+
+            const lines = this.content.split('\n');
+            let count = 0;
+            var found = false;
+            for (const line of lines) {
+                count += line.length + 1;
+                if (count >= cursorPosition + 1 && !found) {
+                    found = true;
+                    contents.push(`${str} ${line}`);
+                } else {
+                    contents.push(line);
+                }
+            }
+
+            this.content = contents.join('\n');
+        },
+
         initJsEvents() {
             this.$nextTick(() => {
                 initBlockquote(this.$refs.preview);
                 initEmbedMedia(this.$refs.preview);
+                initCode(this.$refs.preview);
             });
         }
     },

@@ -30,9 +30,7 @@ export default function (element) {
         }
 
         if (vocarooRegex.test(link.href)) {
-            // https://vocaroo.com/1iQV13xqWj0U
-            // https://voca.ro/1iQV13xqWj0U
-            const [,vocarooId] = vocarooRegex.exec(link.href);
+            const [, vocarooId] = vocarooRegex.exec(link.href);
             const url = `https://vocaroo.com/embed/${vocarooId}?autoplay=0`;
             const iframe = document.createElement('iframe');
             iframe.src = url;
@@ -43,9 +41,5 @@ export default function (element) {
             link.insertAdjacentElement('afterend', iframe);
             link.insertAdjacentHTML('afterend', '<br>');
         }
-
-        // if() {
-        //     <iframe scrolling="no" frameborder="0" allowtransparency="true" title="Sondages Pixule" width="370" height="365" src="//www.pixule.com/widget443889228928" data-key="443889228928"></iframe>
-        // }
     }
 }
