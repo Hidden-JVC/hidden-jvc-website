@@ -15,7 +15,7 @@
                                 <v-card outlined>
                                     <v-toolbar class="elevation-0" dense style="background-color: #303436;">
                                         <v-toolbar-title>
-                                            Forum {{ forum.Forum.Name }}
+                                            Forum {{ forum.Name }}
                                         </v-toolbar-title>
                                     </v-toolbar>
                                 </v-card>
@@ -54,9 +54,10 @@
                     </v-col>
 
                     <v-col cols="12" md="4">
-                        <InformationsMenu class="mb-4" :forumId="forum.Forum.Id" :moderators="forum.Moderators" />
-                        <UserListMenu :forumId="forum.Forum.Id" class="mb-4" />
+                        <InformationsMenu class="mb-4" :forumId="forum.Id" :moderators="forum.Moderators" />
+                        <UserListMenu :forumId="forum.Id" class="mb-4" />
                         <SearchMenu class="mb-4" @search="makeSearch" :tags="forum.Tags" />
+                        <LogsCard class="mb-4" :forumId="forum.Id" />
                     </v-col>
                 </v-row>
             </v-card>
@@ -65,9 +66,10 @@
 </template>
 
 <script>
-import InformationsMenu from '../../components/hidden/forum/InformationsMenu';
+import LogsCard from '../../components/cards/LogsCard';
 import SearchMenu from '../../components/hidden/forum/SearchMenu';
 import UserListMenu from '../../components/hidden/forum/UserListMenu';
+import InformationsMenu from '../../components/hidden/forum/InformationsMenu';
 
 import CreateTopicForm from '../../components/hidden/forum/CreateTopicForm';
 import TopicList from '../../components/hidden/forum/TopicList';
@@ -76,6 +78,7 @@ export default {
     name: 'Forum',
 
     components: {
+        LogsCard,
         TopicList,
         SearchMenu,
         UserListMenu,
@@ -105,14 +108,6 @@ export default {
                 this.setLoading(true);
 
                 const start = performance.now();
-                if (this.forum === null) {
-                    const { forum, error } = await this.repos.hidden.getForum(this.$route.params.forumId);
-                    if (error) {
-                        this.openErrorDialog(error);
-                    } else {
-                        this.forum = forum;
-                    }
-                }
 
                 const query = {
                     forumId: this.$route.params.forumId,
@@ -124,7 +119,7 @@ export default {
                     query.searchType = this.searchType;
                 }
 
-                const { topics, count, error } = await this.repos.hidden.getTopics(query);
+                const { forum, topics, count, error } = await this.repos.hidden.getTopics(query);
 
                 const end = performance.now();
                 this.$store.commit('application/pushLog', `Topics récupérés en ${(end - start) / 1000}s`);
@@ -132,6 +127,7 @@ export default {
                 if (error) {
                     this.openErrorDialog(error);
                 } else {
+                    this.forum = forum;
                     this.topics = topics;
                     this.topicsCount = count;
                 }
@@ -188,8 +184,8 @@ export default {
 
             return [
                 { text: 'Forums', to: '/forums', exact: true },
-                { text: this.forum.Forum.Name, to: `/forums/${this.forum.Forum.Id}`, exact: true },
-                { text: 'Hidden', to: `/forums/${this.forum.Forum.Id}/hidden`, exact: true }
+                { text: this.forum.Name, to: `/forums/${this.forum.Id}`, exact: true },
+                { text: 'Hidden', to: `/forums/${this.forum.Id}/hidden`, exact: true }
             ];
         },
 
@@ -204,23 +200,23 @@ export default {
         moderationSelect() {
             const list = [];
 
-            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'Lock')) {
+            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'Lock')) {
                 list.push({ value: 'Lock', text: 'Lock' });
             }
 
-            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'UnLock')) {
+            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'UnLock')) {
                 list.push({ value: 'UnLock', text: 'Délock' });
             }
 
-            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'Pin')) {
+            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'Pin')) {
                 list.push({ value: 'Pin', text: 'Epingler' });
             }
 
-            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'UnPin')) {
+            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'UnPin')) {
                 list.push({ value: 'UnPin', text: 'Désépingler' });
             }
 
-            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'Delete')) {
+            if (this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'Delete')) {
                 list.push({ value: 'Delete', text: 'Supprimer' });
             }
 

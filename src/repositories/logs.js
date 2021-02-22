@@ -1,11 +1,7 @@
 import Repository from './Repository.js';
 
 class LogsRepository extends Repository {
-    async getModerationLog(page, limit, userId) {
-        const query = { page, limit };
-        if (userId !== null) {
-            query.userId = userId;
-        }
+    async getModerationLog(query) {
         return await this.get('logs/moderation', query);
     }
 }

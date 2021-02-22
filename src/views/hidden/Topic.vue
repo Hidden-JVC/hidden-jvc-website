@@ -14,7 +14,7 @@
                             <v-toolbar class="elevation-0" dense style="background-color: #303436;">
                                 <template v-if="!displayTitleInput">
                                     <v-toolbar-title>
-                                        {{ topic.Topic.Title }}
+                                        {{ topic.Title }}
                                     </v-toolbar-title>
 
                                     <v-btn v-if="displayUpdateTitleButton" @click="displayTitleInput = true" color="primary" class="ml-auto" depressed small>
@@ -47,13 +47,13 @@
                             </v-col>
 
                             <v-col cols="12" lg="2">
-                                <v-btn @click="returnToForum()" class="secondary" depressed block small> Liste des Sujets </v-btn>
+                                <v-btn :to="`/forums/${this.forum.Id}/hidden`" class="secondary" depressed block small> Liste des Sujets </v-btn>
                             </v-col>
                         </v-row>
 
                         <v-row class="post-list">
-                            <v-col cols="12" v-for="post of topic.Posts" :key="post.Post.Id">
-                                <Post class="post-card" :post="post" :topic="topic" :forum="forum" :isPemt="pemtPosts.includes(post.Post.Id)" @quote="quote" @reloadTopic="fetchTopic()" @fic-mode="ficMode" />
+                            <v-col cols="12" v-for="post of posts" :key="post.Id">
+                                <Post class="post-card" :post="post" :topic="topic" :forum="forum" :isPemt="pemtPosts.includes(post.Id)" @quote="quote" @reloadTopic="fetchTopic()" @fic-mode="ficMode" />
                             </v-col>
                         </v-row>
 
@@ -67,7 +67,7 @@
                             </v-col>
 
                             <v-col cols="12" lg="2">
-                                <v-btn @click="returnToForum()" class="secondary" depressed block small> Liste des Sujets </v-btn>
+                                <v-btn :to="`/forums/${this.forum.Id}/hidden`" class="secondary" depressed block small> Liste des Sujets </v-btn>
                             </v-col>
                         </v-row>
 
@@ -88,7 +88,8 @@
 
                     <v-col cols="12" lg="4">
                         <InformationsMenu class="mb-4" :forum="forum" :topic="topic" :moderators="forum.Moderators" @reload-topic="fetchTopic()" />
-                        <UserListMenu :forumId="forum.Forum.Id" class="mb-4" />
+                        <UserListMenu :forumId="forum.Id" class="mb-4" />
+                        <LogsCard class="mb-4" :forumId="forum.Id" :hiddenTopicId="topic.Id" />
                     </v-col>
                 </v-row>
             </v-card>
@@ -99,6 +100,7 @@
 <script>
 import TextEditor from '../../components/TextEditor';
 import Post from '../../components/hidden/topic/Post';
+import LogsCard from '../../components/cards/LogsCard';
 import UserListMenu from '../../components/hidden/forum/UserListMenu';
 import InformationsMenu from '../../components/hidden/topic/InformationsMenu';
 
@@ -107,6 +109,7 @@ export default {
 
     components: {
         Post,
+        LogsCard,
         TextEditor,
         UserListMenu,
         InformationsMenu
@@ -115,13 +118,13 @@ export default {
     data: () => ({
         forum: null,
         topic: null,
+        posts: [],
 
         userId: null,
         disableNavigation: false,
 
         page: 1,
         limit: 20,
-        postsCount: 0,
 
         content: '',
 
@@ -137,14 +140,14 @@ export default {
 
             return [
                 { text: 'Forums', to: '/forums', exact: true },
-                { text: this.forum.Forum.Name, to: `/forums/${this.forum.Forum.Id}`, exact: true },
-                { text: 'Hidden', to: `/forums/${this.forum.Forum.Id}/hidden`, exact: true },
-                { text: this.topic.Topic.Title, to: `/forums/${this.forum.Forum.Id}/hidden/${this.topic.Topic.Id}`, exact: true }
+                { text: this.forum.Name, to: `/forums/${this.forum.Id}`, exact: true },
+                { text: 'Hidden', to: `/forums/${this.forum.Id}/hidden`, exact: true },
+                { text: this.topic.Title, to: `/forums/${this.forum.Id}/hidden/${this.topic.Id}`, exact: true }
             ];
         },
 
         paginationLength() {
-            let length = Math.ceil(this.postsCount / this.limit);
+            let length = Math.ceil(this.topic.PostCount / this.limit);
             if (length === 0 || isNaN(length)) {
                 length = 1;
             }
@@ -158,13 +161,13 @@ export default {
         pemtPosts() {
             const map = {};
 
-            for (const post of this.topic.Posts) {
-                const date = new Date(post.Post.CreationDate);
+            for (const post of this.posts) {
+                const date = new Date(post.CreationDate);
                 const seconds = Math.floor(date.getTime() / 1000);
                 if (!Object.prototype.hasOwnProperty.call(map, seconds)) {
                     map[seconds] = [];
                 }
-                map[seconds].push(post.Post.Id);
+                map[seconds].push(post.Id);
             }
 
             let posts = [];
@@ -214,21 +217,15 @@ export default {
                     this.$router.push({ query });
                 }
 
-                if (this.forum === null) {
-                    const { forum, error } = await this.repos.hidden.getForum(this.$route.params.forumId);
-                    if (error) {
-                        return this.openErrorDialog(error);
-                    } else {
-                        this.forum = forum;
-                    }
-                }
 
-                const { topic, error } = await this.repos.hidden.getTopic(this.$route.params.topicId, this.page, this.userId);
+                const { forum, topic, posts, error } = await this.repos.hidden.getTopic(this.$route.params.topicId, this.page, this.userId);
                 if (error) {
                     return this.openErrorDialog(error);
                 } else {
+                    this.forum = forum;
                     this.topic = topic;
-                    this.titleInput = topic.Topic.Title;
+                    this.posts = posts;
+                    this.titleInput = topic.Title;
                     this.postsCount = this.topic.PostsCount;
                 }
                 const end = performance.now();
@@ -247,7 +244,10 @@ export default {
                 this.setLoading(true);
 
                 const topicId = parseInt(this.$route.params.topicId);
-                await this.repos.hidden.createPost(topicId, this.content.trim(), this.$store.state.user.anonymousName);
+                const { error } = await this.repos.hidden.createPost(topicId, this.content.trim(), this.$store.state.user.anonymousName);
+                if (error) {
+                    return this.openErrorDialog(error);
+                }
                 this.fetchTopic();
             } catch (err) {
                 console.error(err);
@@ -257,8 +257,7 @@ export default {
         },
 
         quote(post) {
-            const name = post.User ? post.User.Name : post.Post.Username;
-            let content = `\n> Le ${this.$options.filters.postDate(post.Post.CreationDate)} ${name} a écrit: \n> `;
+            let content = `\n> Le ${this.$options.filters.postDate(post.CreationDate)} ${post.User.Name} a écrit: \n> `;
             content += post.Post.Content.split('\n').join('\n> ');
             content += '\n\n';
 
@@ -276,7 +275,7 @@ export default {
         },
 
         returnToForum() {
-            this.$router.push(`/forums/${this.forum.Forum.Id}/hidden`);
+            this.$router.push(`/forums/${this.forum.Id}/hidden`);
         },
 
         focusResponseForm() {

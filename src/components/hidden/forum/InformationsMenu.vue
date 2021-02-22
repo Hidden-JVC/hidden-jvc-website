@@ -4,30 +4,50 @@
             Informations
         </v-card-title>
 
-        <v-card-text class="pt-4">
-            <template v-if="moderators.length > 0">
-                Modérateurs:
+        <template v-if="moderators.length > 0">
+            <v-list class="py-0" dense>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>
+                            Modérateurs
+                        </v-list-item-title>
 
-                <ul>
-                    <li v-for="moderator of moderators" :key="moderator.Id" v-text="moderator.Name">
-                        {{ moderator.Name }}
-                    </li>
-                </ul>
-            </template>
-            <template v-else>
-                Aucun modérateurs
-            </template>
+                        <v-list-item-subtitle>
+                            <ul>
+                                <li v-for="moderator of moderators" :key="moderator.Id">
+                                    <router-link :to="`/users/${moderator.Name}`">
+                                        {{ moderator.Name }}
+                                    </router-link>
+                                </li>
+                            </ul>
+                        </v-list-item-subtitle>
+                    </v-list-item-content>
+                </v-list-item>
 
-            <br> <br>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>
+                            Logs
+                        </v-list-item-title>
 
-            <Logs />
-        </v-card-text>
+                        <v-list-item-subtitle>
+                            <ul style="max-height: 65px; overflow-y: auto" ref="logs">
+                                <li v-for="(log, i) of $store.state.application.logs.slice().reverse()" :key="log" :class="{ 'blue--text': i === 0 }">
+                                    {{ log }}
+                                </li>
+                            </ul>
+                        </v-list-item-subtitle>
+                    </v-list-item-content>
+                </v-list-item>
+            </v-list>
+        </template>
+        <template v-else>
+            Aucun modérateur
+        </template>
     </v-card>
 </template>
 
 <script>
-import Logs from '../../misc/Logs';
-
 export default {
     name: 'InformationsMenu',
 
@@ -36,10 +56,6 @@ export default {
             required: true,
             type: Array
         }
-    },
-
-    components: {
-        Logs
     }
 };
 </script>

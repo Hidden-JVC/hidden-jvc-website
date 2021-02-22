@@ -1,5 +1,10 @@
 <template>
-    <v-card :class="{ 'pinned': post.Post.Pinned, 'owned': $store.state.settings.highlightUserMessages && isPostMadeByConnectedUser }" outlined>
+    <v-card :class="{ 'pinned': post.Pinned, 'owned': $store.state.settings.highlightUserMessages && isPostMadeByConnectedUser }" outlined>
+
+        <v-btn v-if="post.Pinned" x-small fab absolute top color="success" style="left: -16px">
+            <v-icon x-small> fas fa-thumbtack </v-icon>
+        </v-btn>
+
         <v-card-title class="py-0">
             <span class="mr-4">
                 <router-link :to="`/users/${post.User.Name}`">
@@ -30,7 +35,7 @@
                 <br>
 
                 <span class="caption" :class="{ 'grey--text': !isPemt, 'green--text': isPemt }">
-                    {{ post.Post.CreationDate | postDate() }}
+                    {{ post.CreationDate | postDate() }}
                 </span>
             </span>
 
@@ -71,7 +76,7 @@
                     </v-list-item>
 
                     <v-list-item v-if="showPin" @click="pin()">
-                        <v-list-item-title> {{ post.Post.Pinned ? 'Désépingler' : 'Épingler' }} </v-list-item-title>
+                        <v-list-item-title> {{ post.Pinned ? 'Désépingler' : 'Épingler' }} </v-list-item-title>
                     </v-list-item>
 
                     <v-list-item v-if="showDelete" @click="deletePost()">
@@ -115,13 +120,13 @@
 
         <v-row class="px-5" style="margin-bottom: -16px" v-show="!editMode">
             <v-col>
-                <div ref="postContent" v-html="parseJvcode(post.Post.Content)"> </div>
+                <div ref="postContent" v-html="parseJvcode(post.Content)"> </div>
             </v-col>
         </v-row>
 
-        <v-row v-if="post.Post.ModificationDate !== null" class="px-5 caption grey--text" v-show="!editMode">
+        <v-row v-if="post.ModificationDate !== null" class="px-5 caption grey--text" v-show="!editMode">
             <v-col>
-                Message édité le {{ post.Post.ModificationDate | postDate() }}
+                Message édité le {{ post.ModificationDate | postDate() }}
             </v-col>
         </v-row>
 
@@ -162,7 +167,7 @@ export default {
 
     data() {
         return {
-            editContent: this.post.Post.Content,
+            editContent: this.post.Content,
             editMode: false
         };
     },
@@ -174,30 +179,30 @@ export default {
 
         showBanAccount() {
             return this.post.User !== null && !this.post.User.Banned && (
-                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'BanAccount')
+                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'BanAccount')
             );
         },
 
         showUnbanAccount() {
             return this.post.User !== null && this.post.User.Banned && (
-                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'BanAccount')
+                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'BanAccount')
             );
         },
 
         showBanIp() {
-            return !this.post.Post.IpBanned && (
-                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'BanIp')
+            return !this.post.IpBanned && (
+                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'BanIp')
             );
         },
 
         showUnbanIp() {
-            return this.post.Post.IpBanned && (
-                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'BanIp')
+            return this.post.IpBanned && (
+                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'BanIp')
             );
         },
 
         showPin() {
-            return !this.post.Post.Op // can't pin first post
+            return !this.post.Op // can't pin first post
                 && (this.topic.Author && this.topic.Author.Id === this.$store.state.user.userId); // author can pin posts
         },
 
@@ -207,7 +212,7 @@ export default {
 
         showDelete() {
             return this.isAdmin
-                || this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'Delete')
+                || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'Delete')
                 || this.isPostMadeByConnectedUser;
         }
     },
@@ -225,7 +230,7 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { error } = await this.repos.hidden.updatePost(this.topic.Topic.Id, this.post.Post.Id, { content: this.editContent });
+                const { error } = await this.repos.hidden.updatePost(this.topic.Id, this.post.Id, { content: this.editContent });
                 if (error) {
                     this.openErrorDialog(error);
                 } else {
@@ -243,7 +248,7 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { error } = await this.repos.hidden.postsModeration('Delete', [this.post.Post.Id]);
+                const { error } = await this.repos.hidden.postsModeration('Delete', [this.post.Id]);
                 if (error) {
                     this.openErrorDialog(error);
                 } else {
@@ -261,7 +266,7 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { error } = await this.repos.hidden.updatePost(this.topic.Topic.Id, this.post.Post.Id, { pinned: !this.post.Post.Pinned });
+                const { error } = await this.repos.hidden.updatePost(this.topic.Id, this.post.Id, { pinned: !this.post.Pinned });
                 if (error) {
                     this.openErrorDialog(error);
                 } else {
@@ -278,7 +283,7 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { error } = await this.repos.hidden.postsModeration(ban ? 'BanAccount' : 'UnBanAccount', [this.post.Post.Id]);
+                const { error } = await this.repos.hidden.postsModeration(ban ? 'BanAccount' : 'UnBanAccount', [this.post.Id]);
                 if (error) {
                     this.openErrorDialog(error);
                 } else {
@@ -296,7 +301,7 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { error } = await this.repos.hidden.postsModeration(ban ? 'BanIp' : 'UnBanIp', [this.post.Post.Id]);
+                const { error } = await this.repos.hidden.postsModeration(ban ? 'BanIp' : 'UnBanIp', [this.post.Id]);
                 if (error) {
                     this.openErrorDialog(error);
                 } else {
@@ -326,7 +331,7 @@ export default {
             if (this.post.User !== null) {
                 return this.post.User.Name;
             } else {
-                return this.post.Post.Username;
+                return this.post.Username;
             }
         },
 

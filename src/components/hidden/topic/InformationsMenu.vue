@@ -39,8 +39,6 @@
                 Aucun modérateurs
             </template>
 
-            <br> <br>
-
             <Logs />
         </v-card-text>
     </v-card>
@@ -93,7 +91,7 @@ export default {
     computed: {
         displayUpdateTagsButton() {
             return this.isAdmin ||
-                this.$store.getters['user/hasRightOnForum'](this.forum.Forum.Id, 'ModifyTag') ||
+                this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'ModifyTag') ||
                 this.topic.Author && this.topic.Author.Id === this.$store.state.user.userId;
         }
     },

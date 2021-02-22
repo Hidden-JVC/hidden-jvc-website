@@ -23,7 +23,7 @@
 
                         <td>
                             <router-link :to="getTopicUrl(topic)">
-                                {{ topic.Topic.Title }}
+                                {{ topic.Title }}
                             </router-link>
 
                             <template v-if="$store.state.settings.displayTopicTags">
@@ -34,21 +34,21 @@
                         </td>
 
                         <td :class="getUserClass(topic.Author)">
-                            {{ getUsernameFromTopic(topic) }}
+                            {{ topic.Author.Name }}
                         </td>
 
                         <td>
-                            {{ topic.PostsCount }}
+                            {{ topic.PostCount - 1 }}
                         </td>
 
                         <td>
                             <router-link :to="getTopicLastPage(topic)">
-                                {{ topic.LastPostDate | topicLastPostDate() }}
+                                {{ topic.LastPostCreationDate | topicLastPostDate() }}
                             </router-link>
                         </td>
 
                         <td v-if="displayModerationTools">
-                            <v-checkbox v-model="selectedTopics" :value="topic.Topic.Id" @change="$emit('input', selectedTopics)" dense />
+                            <v-checkbox v-model="selectedTopics" :value="topic.Id" @change="$emit('input', selectedTopics)" dense />
                         </td>
                     </tr>
 
@@ -70,20 +70,20 @@
                 <v-list-item-content class="pb-2">
                     <v-list-item-title class="mb-4">
                         <router-link :to="getTopicUrl(topic)">
-                            {{ topic.Topic.Title }}
+                            {{ topic.Title }}
                         </router-link>
                         <span style="color: #748491">
-                            ({{ topic.PostsCount }})
+                            ({{ topic.PostCount - 1 }})
                         </span>
                     </v-list-item-title>
 
                     <v-list-item-subtitle>
                         <span :class="getUserClass(topic.Author)">
-                            {{ getUsernameFromTopic(topic) }}
+                            {{ topic.Author.Name }}
                         </span>
 
                         <span class="float-right mr-4">
-                            {{ topic.LastPostDate | topicLastPostDate() }}
+                            {{ topic.LastPostCreationDate | topicLastPostDate() }}
                         </span>
                     </v-list-item-subtitle>
                 </v-list-item-content>
@@ -124,25 +124,17 @@ export default {
             }
         },
 
-        getUsernameFromTopic(topic) {
-            if (topic.Author === null) {
-                return topic.Topic.Username;
-            } else {
-                return topic.Author.Name;
-            }
-        },
-
         getIconInfo(topic) {
-            if (topic.Topic.Pinned) {
-                if (topic.Topic.Locked) {
+            if (topic.Pinned) {
+                if (topic.Locked) {
                     return { color: 'red', icon: 'fas fa-thumbtack' };
                 } else {
                     return { color: 'green', icon: 'fas fa-thumbtack' };
                 }
             } else {
-                if (topic.Topic.Locked) {
+                if (topic.Locked) {
                     return { color: 'blue-grey', icon: 'fas fa-lock' };
-                } else if (topic.PostsCount >= 20) {
+                } else if (topic.PostCount >= 20) {
                     return { color: 'red', icon: 'fas fa-folder' };
                 } else {
                     return { color: 'yellow darken-1', icon: 'fas fa-folder' };
@@ -155,8 +147,8 @@ export default {
         },
 
         getTopicUrl(topic) {
-            const title = textToUrl(topic.Topic.Title);
-            return `/forums/${this.forum.Forum.Id}/hidden/${topic.Topic.Id}-` + title;
+            const title = textToUrl(topic.Title);
+            return `/forums/${this.forum.Id}/hidden/${topic.Id}-` + title;
         },
 
         getTopicLastPage(topic) {
@@ -177,7 +169,7 @@ export default {
 }
 
 .moderator-user {
-    color: green;
+    color: rgb(14, 167, 14);
 }
 
 .registered-user {
