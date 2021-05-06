@@ -258,7 +258,7 @@ export default {
 
         quote(post) {
             let content = `\n> Le ${this.$options.filters.postDate(post.CreationDate)} ${post.User.Name} a écrit: \n> `;
-            content += post.Post.Content.split('\n').join('\n> ');
+            content += post.Content.split('\n').join('\n> ');
             content += '\n\n';
 
             this.$refs.textEditor.appendText(content);

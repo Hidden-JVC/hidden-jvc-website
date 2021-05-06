@@ -5,13 +5,13 @@
                 <v-card>
                     <!-- <v-sheet color="#37383a" class="pa-4">
                         <v-avatar :size="110" class="">
-                            <v-img v-if="user.User.ProfilePicture !== null" :src="user.User.ProfilePicture" />
+                            <v-img v-if="user.ProfilePicture !== null" :src="user.ProfilePicture" />
                             <v-img v-else src="@/assets/larry.png" />
                         </v-avatar>
 
                         <div class=" ml-4">
                             <h1 class="mb-4">
-                                {{ user.User.Name }}
+                                {{ user.Name }}
                             </h1>
 
                             <v-tooltip top v-for="badge of user.Badges" :key="badge.Id">
@@ -27,14 +27,14 @@
                         <v-col class="py-0">
                             <small> Membres depuis : </small> <br>
                             <span class="white--text">
-                                {{ user.User.CreationDate | toDateStr() }}
-                                ({{ user.User.CreationDate | daysSinceDate() }} jours)
+                                {{ user.CreationDate | toDateStr() }}
+                                ({{ user.CreationDate | daysSinceDate() }} jours)
                             </span>
                         </v-col>
 
                         <v-col class="py-0">
                             <small> Messages </small> <br>
-                            <span class="white--text"> {{ user.User.PostCount }} </span>
+                            <span class="white--text"> {{ user.PostCount }} </span>
                         </v-col>
 
                         <v-col class="py-0">
@@ -47,14 +47,14 @@
                         <v-row>
                             <v-col cols="2">
                                 <v-avatar :size="180" style="position: absolute">
-                                    <v-img v-if="user.User.ProfilePicture !== null" :src="user.User.ProfilePicture" />
+                                    <v-img v-if="user.ProfilePicture !== null" :src="user.ProfilePicture" />
                                     <v-img v-else src="@/assets/larry.png" />
                                 </v-avatar>
                             </v-col>
 
                             <v-col>
                                 <h1 class="mb-4">
-                                    {{ user.User.Name }}
+                                    {{ user.Name }}
                                 </h1>
 
                                 <v-tooltip top v-for="badge of user.Badges" :key="badge.Id">
@@ -71,14 +71,14 @@
                         <v-col class="py-0" offset="2">
                             <small> Membres depuis </small> <br>
                             <span class="white--text">
-                                {{ user.User.CreationDate | toDateStr() }}
-                                ({{ user.User.CreationDate | daysSinceDate() }} jours)
+                                {{ user.CreationDate | toDateStr() }}
+                                ({{ user.CreationDate | daysSinceDate() }} jours)
                             </span>
                         </v-col>
 
                         <v-col class="py-0">
                             <small> Messages </small> <br>
-                            <span class="white--text"> {{ user.User.PostCount }} </span>
+                            <span class="white--text"> {{ user.PostCount }} </span>
                         </v-col>
 
                         <v-col class="py-0">

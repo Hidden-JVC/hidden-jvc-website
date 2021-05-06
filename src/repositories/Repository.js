@@ -1,4 +1,4 @@
-const API_ROOT_URL = process.env.NODE_ENV === 'production' ? 'https://api.hiddenjvc.com' : 'http://192.168.1.21:8787';
+const API_ROOT_URL = process.env.NODE_ENV === 'production' ? 'https://api.hiddenjvc.com' : 'http://127.0.0.1:8787';
 
 import store from '../store';
 

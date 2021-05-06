@@ -67,9 +67,9 @@ export default {
                 if (error) {
                     this.openErrorDialog(error);
                 } else {
-                    this.email = user.User.Email;
-                    this.signature = user.User.Signature || '';
-                    this.profilePicture = user.User.ProfilePicture;
+                    this.email = user.Email;
+                    this.signature = user.Signature || '';
+                    this.profilePicture = user.ProfilePicture;
                 }
             } catch (err) {
                 console.error(err);

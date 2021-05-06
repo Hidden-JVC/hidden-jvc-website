@@ -18,27 +18,33 @@
                 <tbody>
                     <tr v-for="topic of topics" :key="topic.Id">
                         <td>
-                            <v-icon :color="getIconInfo(topic).color" small> {{ getIconInfo(topic).icon }} </v-icon>
-                        </td>
-
-                        <td>
-                            <router-link :to="getTopicUrl(topic)">
-                                {{ topic.Title }}
+                            <router-link :to="getTopicUrl(topic)" class="d-block">
+                                <v-icon :color="getIconInfo(topic).color" small> {{ getIconInfo(topic).icon }} </v-icon>
                             </router-link>
-
-                            <template v-if="$store.state.settings.displayTopicTags">
-                                <v-chip class="ml-2" v-for="tag of topic.Tags" :key="tag.Name" :color="tag.Color" label small>
-                                    {{ tag.Name }} <v-icon v-if="tag.Locked" x-small right> fas fa-lock </v-icon>
-                                </v-chip>
-                            </template>
-                        </td>
-
-                        <td :class="getUserClass(topic.Author)">
-                            {{ topic.Author.Name }}
                         </td>
 
                         <td>
-                            {{ topic.PostCount - 1 }}
+                            <router-link :to="getTopicUrl(topic)" class="d-block">
+                                {{ topic.Title }}
+
+                                <template v-if="$store.state.settings.displayTopicTags">
+                                    <v-chip class="ml-2" v-for="tag of topic.Tags" :key="tag.Name" :color="tag.Color" label small>
+                                        {{ tag.Name }} <v-icon v-if="tag.Locked" x-small right> fas fa-lock </v-icon>
+                                    </v-chip>
+                                </template>
+                            </router-link>
+                        </td>
+
+                        <td>
+                            <router-link :to="`/users/${topic.Author.Name}`" class="d-block no-text-decoration" :class="getUserClass(topic.Author)">
+                                {{ topic.Author.Name }}
+                            </router-link>
+                        </td>
+
+                        <td>
+                            <router-link :to="getTopicUrl(topic)" class="d-block no-text-decoration white--text">
+                                {{ topic.PostCount - 1 }}
+                            </router-link>
                         </td>
 
                         <td>
@@ -142,17 +148,13 @@ export default {
             }
         },
 
-        openTopic(topicId) {
-            alert(topicId);
-        },
-
         getTopicUrl(topic) {
             const title = textToUrl(topic.Title);
             return `/forums/${this.forum.Id}/hidden/${topic.Id}-` + title;
         },
 
         getTopicLastPage(topic) {
-            let lastPage = Math.ceil(topic.PostsCount / 20);
+            let lastPage = Math.ceil(topic.PostCount / 20);
             if (lastPage === 0 || isNaN(lastPage)) {
                 lastPage = 1;
             }
@@ -219,7 +221,8 @@ export default {
                     cursor: pointer;
                 }
 
-                &:nth-child(2) a, &:nth-child(5) a {
+                &:nth-child(2) a,
+                &:nth-child(5) a {
                     color: #4baeff;
                     text-decoration: none;
 

@@ -1,9 +1,14 @@
 <template>
     <v-card :class="{ 'pinned': post.Pinned, 'owned': $store.state.settings.highlightUserMessages && isPostMadeByConnectedUser }" outlined>
 
-        <v-btn v-if="post.Pinned" x-small fab absolute top color="success" style="left: -16px">
-            <v-icon x-small> fas fa-thumbtack </v-icon>
-        </v-btn>
+        <v-tooltip top>
+            <template v-slot:activator="{ on }">
+                <v-btn v-if="post.Pinned" x-small fab absolute top color="success" style="left: -16px" v-on="on">
+                    <v-icon x-small> fas fa-thumbtack </v-icon>
+                </v-btn>
+            </template>
+            Message épinglé
+        </v-tooltip>
 
         <v-card-title class="py-0">
             <span class="mr-4">
