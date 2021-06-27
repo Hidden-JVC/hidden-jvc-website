@@ -19,6 +19,10 @@ class ForumRepository extends Repository {
         return await this.get(`hidden/topics/${topicId}`, query);
     }
 
+    async getPostQuotes(postId) {
+        return await this.get(`hidden/posts/${postId}/quotes`);
+    }
+
     async createTopic(forumId, title, tags, content, username) {
         return await this.post('hidden/topics', { forumId, title, tags, content, username });
     }
@@ -27,8 +31,8 @@ class ForumRepository extends Repository {
         return await this.post(`hidden/topics/${topicId}`, { title, tags });
     }
 
-    async createPost(topicId, content, username) {
-        return await this.post(`hidden/topics/${topicId}/posts`, { topicId, content, username });
+    async createPost(topicId, content, postId) {
+        return await this.post('hidden/posts', { topicId, content, postId });
     }
 
     async updatePost(topicId, postId, data) {

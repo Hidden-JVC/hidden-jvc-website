@@ -2,18 +2,17 @@
     <v-card outlined>
         <v-card-title class="subtitle-2 pa-2" style="background-color: #303436;">
             Informations
-        </v-card-title>
-
-        <v-card-text class="pt-4">
-            Tags:
-            <template v-if="displayTagsEdit">
-                <TagsSelect v-model="selectedTags" :tags="forum.Tags" placeholder="Modifier les tags du topic" class="mt-2 mb-4" />
-            </template>
 
             <template v-if="!displayTagsEdit">
                 <v-chip class="ml-2" v-for="tag of topic.Tags" :key="tag.Name" :color="tag.Color" label small>
                     {{ tag.Name }} <v-icon v-if="tag.Locked" x-small right> fas fa-lock </v-icon>
                 </v-chip>
+            </template>
+        </v-card-title>
+
+        <v-card-text class="pt-4">
+            <template v-if="displayTagsEdit">
+                <TagsSelect v-model="selectedTags" :tags="forum.Tags" placeholder="Modifier les tags du topic" class="mt-2 mb-4" />
             </template>
 
             <template v-if="displayUpdateTagsButton">
@@ -24,16 +23,15 @@
                 <v-btn @click="displayTagsEdit = false" v-show="displayTagsEdit" color="secondary" small depressed> Annuler </v-btn>
             </template>
 
-            <br> <br>
-
             <template v-if="moderators.length > 0">
                 Modérateurs:
 
-                <ul>
-                    <li v-for="moderator of moderators" :key="moderator.Id" v-text="moderator.Name">
+                <span v-for="(moderator, i) of moderators" :key="moderator.Id">
+                    <router-link :to="`/users/${moderator.Name}`" class="no-text-decoration grey--text">
                         {{ moderator.Name }}
-                    </li>
-                </ul>
+                    </router-link>
+                    <span v-if="i !== moderators.length - 1">, </span>
+                </span>
             </template>
             <template v-else>
                 Aucun modérateurs

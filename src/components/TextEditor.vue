@@ -19,13 +19,13 @@
 
                 <v-item-group class="mr-4 mb-2 mb-lg-0 v-btn-toggle">
                     <v-btn @click="editorPrepend('*')" small>
-                        <v-icon  small> fas fa-list-ul </v-icon>
+                        <v-icon small> fas fa-list-ul </v-icon>
                     </v-btn>
                     <v-btn @click="editorPrepend('1.')" small>
-                        <v-icon  small> fas fa-list-ol </v-icon>
+                        <v-icon small> fas fa-list-ol </v-icon>
                     </v-btn>
                     <v-btn @click="editorPrepend('>')" small>
-                        <v-icon  small> fas fa-quote-left </v-icon>
+                        <v-icon small> fas fa-quote-left </v-icon>
                     </v-btn>
                     <v-btn @click="editorEmphasis('```')" small>
                         <v-icon small> fas fa-code </v-icon>
@@ -120,7 +120,44 @@
         </v-card>
 
         <ValidationProvider v-slot="{ errors }" name="Message" :rules="required ? 'required' : null">
-            <v-textarea v-model="content" @change="$emit('input', content)" ref="textarea" :error-messages="errors" hide-details outlined />
+            <!-- <v-card v-if="quotedPost !== null" style="border-bottom-left-radius: 0; border-bottom-right-radius: 0">
+                <v-card-title class="blue darken-4 subtitle pa-2">
+                    Vous citez le post de {{ quotedPost.User.Name }}
+                </v-card-title>
+            </v-card> -->
+            <!-- <v-textarea v-model="content" @change="$emit('input', content)" ref="textarea" :error-messages="errors" hide-details outlined /> -->
+            <v-card v-if="quotedPost !== null" outlined style="border-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">
+                <v-toolbar class="elevation-0" dense style="background-color: #303436;">
+                    <v-toolbar-title>
+                        Vous citez le
+
+                        <v-menu offset-y top open-on-hover nudge-width="400">
+                            <template v-slot:activator="{ on }">
+                                <span v-on="on" class="primary--text">
+                                    post
+                                </span>
+                            </template>
+                            <QuotedPost :post="quotedPost" :originalPostId="quotedPost.Id" />
+                        </v-menu>
+
+                        de
+
+                        <v-menu offset-y top open-on-hover nudge-width="400">
+                            <template v-slot:activator="{ on }">
+                                <span v-on="on" :class="getUserClass(quotedPost.User)">
+                                    {{ quotedPost.User.Name }}
+                                </span>
+                            </template>
+                            <AccountMenu :user="quotedPost.User" />
+                        </v-menu>
+
+                    </v-toolbar-title>
+                    <v-btn class="ml-auto" icon small @click="quotedPost = null">
+                        <v-icon small> fas fa-times </v-icon>
+                    </v-btn>
+                </v-toolbar>
+            </v-card>
+            <v-textarea v-model="content" @change="$emit('input', content)" ref="textarea" v-bind:class="{ 'textarea-quote': quotedPost !== null }" :error-messages="errors" hide-details outlined />
         </ValidationProvider>
 
         <v-row>
@@ -140,12 +177,21 @@
 <script>
 import { parse } from 'hidden-jvc-jvcode';
 
+import QuotedPost from '../components/hidden/topic/QuotedPost';
+import AccountMenu from '../components/hidden/topic/AccountMenu';
+
+import initCode from '../helpers/initCode';
 import initBlockquote from '../helpers/initBlockquote';
 import initEmbedMedia from '../helpers/initEmbedMedia';
-import initCode from '../helpers/initCode';
+
 
 export default {
     name: 'TextEditor',
+
+    components: {
+        QuotedPost,
+        AccountMenu
+    },
 
     props: {
         value: { type: String, required: true },
@@ -155,6 +201,7 @@ export default {
     data() {
         return {
             content: this.value,
+            quotedPost: null,
             risibankTab: 1,
             risibank: null,
             risibankOpen: this.$store.state.settings.risibankOpen,
@@ -313,6 +360,15 @@ export default {
             this.content = contents.join('\n');
         },
 
+        quote(post) {
+            this.quotedPost = post;
+        },
+
+        focus() {
+            this.$refs.textarea.focus();
+            this.$refs.textarea.$el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        },
+
         initJsEvents() {
             this.$nextTick(() => {
                 initBlockquote(this.$refs.preview);
@@ -341,6 +397,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.textarea-quote ::v-deep.v-input__control {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
 .stickers-container {
     overflow-y: scroll;
     overflow-x: hidden;

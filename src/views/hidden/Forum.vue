@@ -56,7 +56,7 @@
                     <v-col cols="12" md="4">
                         <InformationsMenu class="mb-4" :forumId="forum.Id" :moderators="forum.Moderators" />
                         <UserListMenu :forumId="forum.Id" class="mb-4" />
-                        <SearchMenu class="mb-4" @search="makeSearch" :tags="forum.Tags" />
+                        <SearchMenu class="mb-4" ref="searchMenu" @search="makeSearch" :availableTags="forum.Tags" :defaultTitle="this.search.title" :defaultTags="this.search.tagIds" />
                         <LogsCard class="mb-4" :forumId="forum.Id" />
                     </v-col>
                 </v-row>
@@ -94,31 +94,85 @@ export default {
         topics: [],
         topicsCount: 0,
 
-        search: null,
-        searchType: null,
-
         moderationAction: null,
-        selectedTopics: []
+        selectedTopics: [],
+
+        disableNavigation: false,
+
+        search: {
+            title: null,
+            userId: null,
+            tagIds: []
+        }
     }),
 
     methods: {
-        async fetchTopics() {
+        buildQuery() {
+            const query = {
+                forumId: this.$route.params.forumId,
+                page: this.page
+            };
 
+            if (this.search.title !== null) {
+                query.searchTitle = this.search.title;
+            }
+            if (this.search.userId !== null) {
+                query.searchUserId = this.search.userId;
+            }
+            if (this.search.tagIds.length > 0) {
+                query.searchTagIds = this.search.tagIds.join(',');
+            }
+
+            return query;
+        },
+
+        buildDisplayQuery() {
+            const query = {};
+            if (this.page !== 1) {
+                query.page = this.page;
+            }
+
+            if (this.search.title !== null) {
+                query.searchTitle = this.search.title;
+            }
+            if (this.search.userId !== null) {
+                query.searchUserId = this.search.userId;
+            }
+            if (this.search.tagIds.length > 0) {
+                query.searchTagIds = this.search.tagIds.join(',');
+            }
+            return query;
+        },
+
+        parseQuery(query) {
+            this.page = parseInt(query.page) || 1;
+            if (query.searchTitle) {
+                this.search.title = query.searchTitle;
+            }
+            if (query.searchUserId) {
+                this.search.userId = query.searchUserId;
+            }
+            if (query.searchTagIds) {
+                this.search.tagIds = query.searchTagIds.split(',').map((t) => parseInt(t));
+            }
+        },
+
+        doPush(query) {
+            return (Object.keys(query).length !== Object.keys(this.$route.query).length) || !Object.keys(query).every((key) => query[key] === this.$route.query[key]);
+        },
+
+        async fetchTopics(push = true) {
             try {
                 this.setLoading(true);
-
+                this.disableNavigation = true;
                 const start = performance.now();
 
-                const query = {
-                    forumId: this.$route.params.forumId,
-                    page: this.page
-                };
 
-                if (this.search !== null && this.searchType !== null) {
-                    query.search = this.search;
-                    query.searchType = this.searchType;
+                if (push && this.doPush(this.buildDisplayQuery())) {
+                    this.$router.push({ query: this.buildDisplayQuery() });
                 }
 
+                const query = this.buildQuery();
                 const { forum, topics, count, error } = await this.repos.hidden.getTopics(query);
 
                 const end = performance.now();
@@ -135,6 +189,7 @@ export default {
                 this.openErrorDialog('Une erreur est survenue lors de la récupération des topics');
                 console.error(err);
             } finally {
+                this.disableNavigation = false;
                 this.setLoading(false);
             }
         },
@@ -169,9 +224,10 @@ export default {
             }
         },
 
-        makeSearch(search, type) {
-            this.search = search;
-            this.searchType = type;
+        makeSearch(title, userId, tagIds) {
+            this.search.title = title;
+            this.search.userId = userId;
+            this.search.tagIds = tagIds;
             this.fetchTopics();
         }
     },
@@ -228,8 +284,18 @@ export default {
         }
     },
 
+    watch: {
+        $route(to) {
+            if (!this.disableNavigation) {
+                this.parseQuery(to.query);
+                this.fetchTopics(false);
+            }
+        }
+    },
+
     created() {
-        this.fetchTopics();
+        this.parseQuery(this.$route.query);
+        this.fetchTopics(false);
     }
 };
 </script>

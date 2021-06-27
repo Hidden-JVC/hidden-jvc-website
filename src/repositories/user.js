@@ -9,6 +9,14 @@ class UserRepository extends Repository {
         return await this.post('users/register', { name, password });
     }
 
+    async getUsers(query) {
+        return await this.get('users', query);
+    }
+
+    async me() {
+        return await this.get('users/me');
+    }
+
     async getUser(userId) {
         return await this.get(`users/${userId}`);
     }

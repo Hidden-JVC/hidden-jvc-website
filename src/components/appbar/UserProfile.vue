@@ -3,7 +3,7 @@
         <template v-slot:activator="{ on }">
             <v-btn class="text-none" text v-on="on">
                 <v-icon left> fas fa-user-circle </v-icon>
-                {{ $store.state.user.name }}
+                {{ $store.state.user.user.Name }}
                 <v-icon right> fas fa-caret-down </v-icon>
             </v-btn>
         </template>
@@ -11,13 +11,14 @@
         <v-list class="py-0">
             <v-list-item class="py-3">
                 <v-list-item-avatar>
-                    <v-avatar color="blue">
-                        <span class="white--text headline text-uppercase"> {{ nameFirstLetter }} </span>
+                    <v-avatar>
+                        <v-img v-if="$store.state.user.user.ProfilePicture === null" src="@/assets/larry.png" />
+                        <v-img v-if="$store.state.user.user.ProfilePicture !== null" :src="$store.state.user.user.ProfilePicture" />
                     </v-avatar>
                 </v-list-item-avatar>
 
                 <v-list-item-content>
-                    <v-list-item-title class="title"> {{ $store.state.user.name }} </v-list-item-title>
+                    <v-list-item-title class="title"> {{ $store.state.user.user.Name }} </v-list-item-title>
                 </v-list-item-content>
             </v-list-item>
 
@@ -25,7 +26,7 @@
 
             <v-list-item class="py-2" to="/account">
                 <v-list-item-action>
-                    <v-icon small> fas fa-user </v-icon>
+                    <v-icon color="blue" small> fas fa-user </v-icon>
                 </v-list-item-action>
 
                 <v-list-item-title> Profile </v-list-item-title>
@@ -64,7 +65,7 @@ export default {
 
     computed: {
         nameFirstLetter() {
-            return this.$store.state.user.name[0];
+            return this.$store.state.user.user.Name[0];
         }
     }
 };

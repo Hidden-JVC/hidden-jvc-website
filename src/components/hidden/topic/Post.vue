@@ -26,10 +26,10 @@
             </span>
 
             <span>
-                <router-link :to="`/users/${post.User.Name}`" class="no-text-decoration" :class="getUserClass(post.User)">
+                <router-link :to="`/users/${post.User.Name}`" class="no-text-decoration">
                     <v-menu offset-y offset-x top open-on-hover nudge-width="400">
                         <template v-slot:activator="{ on }">
-                            <span v-on="on">
+                            <span v-on="on" :class="getUserClass(post.User)">
                                 {{ post.User.Name }}
                             </span>
                         </template>
@@ -44,72 +44,90 @@
                 </span>
             </span>
 
-            <!-- Edit -->
-            <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                    <v-icon v-if="showEdit" @click="toggleEdit()" class="ml-auto" color="blue" x-small v-on="on">
-                        fas fa-edit
-                    </v-icon>
-                </template>
-                Modifier
-            </v-tooltip>
+            <template v-if="!notificationMode">
+                <!-- Edit -->
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <v-icon v-if="showEdit" @click="toggleEdit()" class="ml-auto" color="blue" x-small v-on="on">
+                            fas fa-edit
+                        </v-icon>
+                    </template>
+                    Modifier
+                </v-tooltip>
 
-            <!-- Quote -->
-            <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                    <v-icon @click="quote(post)" :class="showEdit ? 'ml-4' : 'ml-auto'" x-small v-on="on">
-                        fas fa-quote-right
-                    </v-icon>
-                </template>
-                Citer
-            </v-tooltip>
+                <!-- Quote -->
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <v-icon @click="quote(post)" :class="showEdit ? 'ml-4' : 'ml-auto'" x-small v-on="on">
+                            fas fa-quote-right
+                        </v-icon>
+                    </template>
+                    Citer
+                </v-tooltip>
 
-            <v-menu offset-y>
-                <template v-slot:activator="{ on }">
-                    <v-icon class="ml-4" small v-on="on">
-                        fas fa-ellipsis-h
-                    </v-icon>
-                </template>
+                <v-menu offset-y>
+                    <template v-slot:activator="{ on }">
+                        <v-icon class="ml-4" small v-on="on">
+                            fas fa-ellipsis-h
+                        </v-icon>
+                    </template>
 
-                <v-list dense>
-                    <v-list-item v-if="post.User !== null" @click="$emit('fic-mode', post.User.Id)">
-                        <v-list-item-title> Afficher les posts de cet utilisateur </v-list-item-title>
-                    </v-list-item>
+                    <v-list dense>
+                        <v-list-item v-if="post.User !== null" @click="$emit('fic-mode', post.User.Id)">
+                            <v-list-item-title> Afficher les posts de cet utilisateur </v-list-item-title>
+                        </v-list-item>
 
-                    <v-list-item v-if="showEdit" @click="toggleEdit()">
-                        <v-list-item-title> Modifier </v-list-item-title>
-                    </v-list-item>
+                        <v-list-item v-if="showEdit" @click="toggleEdit()">
+                            <v-list-item-title> Modifier </v-list-item-title>
+                        </v-list-item>
 
-                    <v-list-item v-if="showPin" @click="pin()">
-                        <v-list-item-title> {{ post.Pinned ? 'Désépingler' : 'Épingler' }} </v-list-item-title>
-                    </v-list-item>
+                        <v-list-item v-if="showPin" @click="pin()">
+                            <v-list-item-title> {{ post.Pinned ? 'Désépingler' : 'Épingler' }} </v-list-item-title>
+                        </v-list-item>
 
-                    <v-list-item v-if="showDelete" @click="deletePost()">
-                        <v-list-item-title> Supprimer </v-list-item-title>
-                    </v-list-item>
+                        <v-list-item v-if="showDelete" @click="deletePost()">
+                            <v-list-item-title> Supprimer </v-list-item-title>
+                        </v-list-item>
 
-                    <v-list-item v-if="showBanAccount" @click="banAccount(true)">
-                        <v-list-item-title> Ban le compte </v-list-item-title>
-                    </v-list-item>
+                        <v-list-item v-if="showBanAccount" @click="banAccount(true)">
+                            <v-list-item-title> Ban le compte </v-list-item-title>
+                        </v-list-item>
 
-                    <v-list-item v-if="showUnbanAccount" @click="banAccount(false)">
-                        <v-list-item-title> Déban le compte </v-list-item-title>
-                    </v-list-item>
+                        <v-list-item v-if="showUnbanAccount" @click="banAccount(false)">
+                            <v-list-item-title> Déban le compte </v-list-item-title>
+                        </v-list-item>
 
-                    <v-list-item v-if="showBanIp" @click="banIp(true)">
-                        <v-list-item-title> Ban l'ip </v-list-item-title>
-                    </v-list-item>
+                        <v-list-item v-if="showBanIp" @click="banIp(true)">
+                            <v-list-item-title> Ban l'ip </v-list-item-title>
+                        </v-list-item>
 
-                    <v-list-item v-if="showUnbanIp" @click="banIp(false)">
-                        <v-list-item-title> Déban l'ip </v-list-item-title>
-                    </v-list-item>
-                </v-list>
-            </v-menu>
+                        <v-list-item v-if="showUnbanIp" @click="banIp(false)">
+                            <v-list-item-title> Déban l'ip </v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
+            </template>
+            <template v-else>
+                 <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <v-btn class="ml-auto" small icon v-on="on" @click="$emit('delete-notification')">
+                            <v-icon small> fas fa-times </v-icon>
+                        </v-btn>
+                    </template>
+                    Supprimer la notification de ce post
+                </v-tooltip>
+            </template>
         </v-card-title>
 
         <v-divider />
 
-        <v-row v-if="editMode" class="px-3">
+        <v-row v-if="post.QuotedPost !== null" class="px-5">
+            <v-col>
+                <QuotedPost :post="post.QuotedPost" :originalPostId="post.Id" />
+            </v-col>
+        </v-row>
+
+        <v-row v-if="editMode" class="px-5">
             <v-col>
                 <TextEditor v-model="editContent" />
 
@@ -146,28 +164,30 @@
 </template>
 
 <script>
-import { parse } from 'hidden-jvc-jvcode';
-
 import TextEditor from '../../TextEditor';
 import AccountMenu from './AccountMenu';
+import QuotedPost from './QuotedPost';
 
 import initBlockquote from '../../../helpers/initBlockquote';
 import initEmbedMedia from '../../../helpers/initEmbedMedia';
 import initCode from '../../../helpers/initCode';
 
 export default {
-    name: 'HiddenPost',
+    name: 'Post',
 
     components: {
         TextEditor,
+        QuotedPost,
         AccountMenu
     },
 
     props: {
         post: { required: true },
-        topic: { required: true },
-        forum: { required: true },
-        isPemt: { default: false }
+        forumId: { default: null },
+        isPemt: { default: false },
+        topicId: { default: null },
+        authorId: { default: null },
+        notificationMode: { type: Boolean, default: false }
     },
 
     data() {
@@ -179,36 +199,36 @@ export default {
 
     computed: {
         isPostMadeByConnectedUser() {
-            return this.post.User !== null && this.post.User.Id === this.$store.state.user.userId;
+            return this.post.User !== null && this.$store.state.user.user !== null && this.post.User.Id === this.$store.state.user.user.Id;
         },
 
         showBanAccount() {
             return this.post.User !== null && !this.post.User.Banned && (
-                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'BanAccount')
+                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forumId, 'BanAccount')
             );
         },
 
         showUnbanAccount() {
             return this.post.User !== null && this.post.User.Banned && (
-                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'BanAccount')
+                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forumId, 'BanAccount')
             );
         },
 
         showBanIp() {
             return !this.post.IpBanned && (
-                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'BanIp')
+                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forumId, 'BanIp')
             );
         },
 
         showUnbanIp() {
             return this.post.IpBanned && (
-                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'BanIp')
+                this.isAdmin || this.$store.getters['user/hasRightOnForum'](this.forumId, 'BanIp')
             );
         },
 
         showPin() {
             return !this.post.Op // can't pin first post
-                && (this.topic.Author && this.topic.Author.Id === this.$store.state.user.userId); // author can pin posts
+                && (this.authorId !== null && this.authorId === this.$store.state.user.user.Id); // author can pin posts
         },
 
         showEdit() {
@@ -217,7 +237,7 @@ export default {
 
         showDelete() {
             return this.isAdmin
-                || this.$store.getters['user/hasRightOnForum'](this.forum.Id, 'Delete')
+                || this.$store.getters['user/hasRightOnForum'](this.forumId, 'Delete')
                 || this.isPostMadeByConnectedUser;
         }
     },
@@ -235,7 +255,7 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { error } = await this.repos.hidden.updatePost(this.topic.Id, this.post.Id, { content: this.editContent });
+                const { error } = await this.repos.hidden.updatePost(this.topicId, this.post.Id, { content: this.editContent });
                 if (error) {
                     this.openErrorDialog(error);
                 } else {
@@ -271,7 +291,7 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { error } = await this.repos.hidden.updatePost(this.topic.Id, this.post.Id, { pinned: !this.post.Pinned });
+                const { error } = await this.repos.hidden.updatePost(this.topicId, this.post.Id, { pinned: !this.post.Pinned });
                 if (error) {
                     this.openErrorDialog(error);
                 } else {
@@ -320,28 +340,12 @@ export default {
             }
         },
 
-        getUserClass(user) {
-            if (user === null) {
-                return 'anonymous-user';
-            } else if (user.IsAdmin) {
-                return 'admin-user';
-            } else if (user.IsModerator) {
-                return 'moderator-user';
-            } else {
-                return 'registered-user';
-            }
-        },
-
         getPostAuthorName() {
             if (this.post.User !== null) {
                 return this.post.User.Name;
             } else {
                 return this.post.Username;
             }
-        },
-
-        parseJvcode(content) {
-            return parse(content);
         }
     },
 
@@ -362,17 +366,5 @@ export default {
 
 .owned {
     border-color: #2196f3;
-}
-
-.admin-user {
-    color: red;
-}
-
-.moderator-user {
-    color: green;
-}
-
-.registered-user {
-    color: #4baeff;
 }
 </style>

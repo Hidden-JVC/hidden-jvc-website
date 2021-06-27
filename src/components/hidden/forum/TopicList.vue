@@ -36,8 +36,8 @@
                         </td>
 
                         <td>
-                            <router-link :to="`/users/${topic.Author.Name}`" class="d-block no-text-decoration" :class="getUserClass(topic.Author)">
-                                {{ topic.Author.Name }}
+                            <router-link :to="`/users/${topic.User.Name}`" class="d-block no-text-decoration" :class="getUserClass(topic.User)">
+                                {{ topic.User.Name }}
                             </router-link>
                         </td>
 
@@ -84,8 +84,8 @@
                     </v-list-item-title>
 
                     <v-list-item-subtitle>
-                        <span :class="getUserClass(topic.Author)">
-                            {{ topic.Author.Name }}
+                        <span :class="getUserClass(topic.User)">
+                            {{ topic.User.Name }}
                         </span>
 
                         <span class="float-right mr-4">

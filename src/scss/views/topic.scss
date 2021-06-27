@@ -1,0 +1,12 @@
+.post-list {
+    div:nth-child(odd) {
+        .post-card {
+            background-color: #181a1b;
+        }
+    }
+    div:nth-child(even) {
+        .post-card {
+            background-color: #1e2021;
+        }
+    }
+}

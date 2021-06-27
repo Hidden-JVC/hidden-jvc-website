@@ -66,11 +66,15 @@ export default {
             try {
                 this.setLoading(true);
 
-                const { userId, isAdmin, jwt, moderators, error } = await this.repos.user.login(this.name, this.password);
+                const { jwt, error } = await this.repos.user.login(this.name, this.password);
                 if (error) {
                     this.openErrorDialog(error);
                 } else {
-                    this.$store.commit('user/setUser', { userId, isAdmin, jwt, moderators, name: this.name });
+                    this.$store.commit('user/setJwt', { jwt });
+                    this.repos.user.me().then((response) => {
+                        this.$store.commit('user/setUser', response.user);
+                        this.$store.commit('user/setNotifications', response.notifications);
+                    }).catch(console.error);
                 }
             } catch (err) {
                 console.error(err);

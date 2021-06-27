@@ -16,10 +16,12 @@ export default new Vuetify({
     },
     theme: {
         dark: true,
+        options: { customProperties: true },
         themes: {
             dark: {
-                primary: '#060',
-                error: '#c62828'
+                primary: '#0D47A1',
+                error: '#c62828',
+                anchor: '#2196f3'
             }
         }
     }

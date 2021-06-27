@@ -53,7 +53,7 @@
 
                         <v-row class="post-list">
                             <v-col cols="12" v-for="post of posts" :key="post.Id">
-                                <Post class="post-card" :post="post" :topic="topic" :forum="forum" :isPemt="pemtPosts.includes(post.Id)" @quote="quote" @reloadTopic="fetchTopic()" @fic-mode="ficMode" />
+                                <Post class="post-card" :post="post" :topicId="topic.Id" :forumId="forum.Id" :isPemt="pemtPosts.includes(post.Id)" @quote="quote" @reloadTopic="fetchTopic()" @fic-mode="ficMode" />
                             </v-col>
                         </v-row>
 
@@ -71,19 +71,22 @@
                             </v-col>
                         </v-row>
 
-                        <v-card class="my-3" outlined>
-                            <v-toolbar class="elevation-0" dense style="background-color: #303436;">
-                                <v-toolbar-title>
-                                    Répondre
-                                </v-toolbar-title>
-                            </v-toolbar>
-                        </v-card>
 
-                        <TextEditor ref="textEditor" v-model="content" />
+                        <template v-if="!topic.Locked">
+                            <v-card class="my-3" outlined>
+                                <v-toolbar class="elevation-0" dense style="background-color: #303436;">
+                                    <v-toolbar-title>
+                                        Répondre
+                                    </v-toolbar-title>
+                                </v-toolbar>
+                            </v-card>
 
-                        <v-btn @click="createPost()" color="primary" depressed small>
-                            Répondre
-                        </v-btn>
+                            <TextEditor ref="textEditor" v-model="content" />
+
+                            <v-btn @click="createPost()" color="primary" depressed small>
+                                Répondre
+                            </v-btn>
+                        </template>
                     </v-col>
 
                     <v-col cols="12" lg="4">
@@ -98,6 +101,8 @@
 </template>
 
 <script>
+import textToUrl from '../../helpers/textToUrl';
+
 import TextEditor from '../../components/TextEditor';
 import Post from '../../components/hidden/topic/Post';
 import LogsCard from '../../components/cards/LogsCard';
@@ -127,6 +132,7 @@ export default {
         limit: 20,
 
         content: '',
+        quotedPost: null,
 
         displayTitleInput: false,
         titleInput: ''
@@ -142,7 +148,7 @@ export default {
                 { text: 'Forums', to: '/forums', exact: true },
                 { text: this.forum.Name, to: `/forums/${this.forum.Id}`, exact: true },
                 { text: 'Hidden', to: `/forums/${this.forum.Id}/hidden`, exact: true },
-                { text: this.topic.Title, to: `/forums/${this.forum.Id}/hidden/${this.topic.Id}`, exact: true }
+                { text: this.topic.Title, to: `/forums/${this.forum.Id}/hidden/${this.topic.Id}-${textToUrl(this.topic.Title)}`, exact: true }
             ];
         },
 
@@ -244,7 +250,7 @@ export default {
                 this.setLoading(true);
 
                 const topicId = parseInt(this.$route.params.topicId);
-                const { error } = await this.repos.hidden.createPost(topicId, this.content.trim(), this.$store.state.user.anonymousName);
+                const { error } = await this.repos.hidden.createPost(topicId, this.content.trim(), this.quotedPost ? this.quotedPost.Id : null);
                 if (error) {
                     return this.openErrorDialog(error);
                 }
@@ -257,11 +263,9 @@ export default {
         },
 
         quote(post) {
-            let content = `\n> Le ${this.$options.filters.postDate(post.CreationDate)} ${post.User.Name} a écrit: \n> `;
-            content += post.Content.split('\n').join('\n> ');
-            content += '\n\n';
-
-            this.$refs.textEditor.appendText(content);
+            this.quotedPost = post;
+            this.$refs.textEditor.quote(post);
+            this.$refs.textEditor.focus();
         },
 
         ficMode(userId) {
@@ -313,22 +317,7 @@ export default {
 
     created() {
         this.parseQuery(this.$route.query);
-        this.fetchTopic();
+        this.fetchTopic(false);
     }
 };
 </script>
-
-<style lang="scss" scoped>
-.post-list {
-    div:nth-child(odd) {
-        .post-card {
-            background-color: #181a1b;
-        }
-    }
-    div:nth-child(even) {
-        .post-card {
-            background-color: #1e2021;
-        }
-    }
-}
-</style>

@@ -5,7 +5,7 @@ Vue.use(VueRouter);
 
 const router = new VueRouter({
     mode: 'hash',
-    base: process.env.BASE_URL,
+    base: process.env.BASE_URL, // eslint-disable-line
     routes: [
         {
             path: '/',
@@ -34,6 +34,10 @@ const router = new VueRouter({
         {
             path: '/forums/:forumId/hidden/:topicId\\-(.*)',
             component: () => import(/* webpackChunkName: "HiddenTopic" */ './views/hidden/Topic.vue')
+        },
+        {
+            path: '/notifications',
+            component: () => import(/* webpackChunkName: "Notifications" */ './views/Notifications.vue')
         },
         {
             path: '/favoris',

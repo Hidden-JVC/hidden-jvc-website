@@ -6,17 +6,15 @@
 
         <v-card-text class="pt-4">
             <ValidationObserver ref="observer">
-                <ValidationProvider v-slot="{ errors, failed }" name="Recherche" rules="min:3">
-                    <v-text-field v-show="type !== 'Tags'" @keyup.enter="submit()" v-model="search" outlined dense :hide-details="!failed" label="Rechercher dans le forum" :error-messages="errors" />
+                <ValidationProvider v-slot="{ errors, failed }" name="Titre" rules="min:3">
+                    <v-text-field @keyup.enter="submit()" v-model="title" outlined dense :hide-details="!failed" placeholder="Titre" :error-messages="errors" class="mb-2" />
                 </ValidationProvider>
 
-                <TagsSelect v-show="type === 'Tags'" v-model="selectedTags" :tags="tags" placeholder="Tags" />
+                <UsersSelect v-model="userId" placeholder="Auteur" class="mb-2" />
 
-                <ValidationProvider v-slot="{ errors, failed }" name="Type" rules="required">
-                    <v-select v-model="type" :items="types" :menu-props="{ offsetY: true }" outlined dense :hide-details="!failed" class="mt-2" label="Type de la recherche" :error-messages="errors" />
-                </ValidationProvider>
+                <TagsSelect v-model="tags" :tags="availableTags" placeholder="Tags" class="mb-2" />
 
-                <v-btn @click="submit()" class="mt-4" color="secondary" depressed block small>
+                <v-btn @click="submit()" color="secondary" depressed block small>
                     Rechercher
                 </v-btn>
             </ValidationObserver>
@@ -26,25 +24,30 @@
 
 <script>
 import TagsSelect from '../../widgets/TagsSelect';
+import UsersSelect from '../../widgets/UsersSelect';
 
 export default {
     name: 'SearchMenu',
 
     components: {
-        TagsSelect
+        TagsSelect,
+        UsersSelect
     },
 
     props: {
-        tags: { type: Array, default: () => [] }
+        availableTags: { type: Array, default: () => [] },
+        defaultTitle: { type: String, default: null },
+        defaultTags: { type: Array, default: () => [] },
+        defaultUserId: { type: String, default: null }
     },
 
-    data: () => ({
-        search: '',
-        selectedTags: [],
-        type: 'Title',
-
-        types: [{ text: 'Sujet', value: 'Title' }, { text: 'Auteur', value: 'Author' }, { text: 'Tags', value: 'Tags' }]
-    }),
+    data: function () {
+        return {
+            title: this.defaultTitle,
+            tags: this.defaultTags,
+            userId: this.defaultUserId
+        };
+    },
 
     methods: {
         async submit() {
@@ -53,12 +56,11 @@ export default {
                 return;
             }
 
-            let search = this.search;
-            if (this.type === 'Tags') {
-                search = this.selectedTags.join(',');
-            }
+            this.$emit('search', this.title, this.userId, this.tags);
+        },
 
-            this.$emit('search', search, this.type);
+        setTitle(title) {
+            this.title = title;
         }
     }
 };

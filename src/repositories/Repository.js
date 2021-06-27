@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 const API_ROOT_URL = process.env.NODE_ENV === 'production' ? 'https://api.hiddenjvc.com' : 'http://127.0.0.1:8787';
 
 import store from '../store';
@@ -9,7 +10,14 @@ export default class Repository {
         if (queryString.length > 0) {
             url = `${url}?${queryString}`;
         }
-        const response = await fetch(url);
+
+        const headers = {};
+
+        if (store.state.user.jwt !== null) {
+            headers.authorization = `Bearer ${store.state.user.jwt}`;
+        }
+
+        const response = await fetch(url, { headers });
         return await response.json();
     }
 

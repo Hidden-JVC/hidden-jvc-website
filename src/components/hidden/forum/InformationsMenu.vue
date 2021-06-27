@@ -9,18 +9,15 @@
                 <v-list-item>
                     <v-list-item-content>
                         <v-list-item-title>
-                            Modérateurs
-                        </v-list-item-title>
+                            Modérateurs:
 
-                        <v-list-item-subtitle>
-                            <ul>
-                                <li v-for="moderator of moderators" :key="moderator.Id">
-                                    <router-link :to="`/users/${moderator.Name}`">
-                                        {{ moderator.Name }}
-                                    </router-link>
-                                </li>
-                            </ul>
-                        </v-list-item-subtitle>
+                            <span v-for="(moderator, i) of moderators" :key="moderator.Id">
+                                <router-link :to="`/users/${moderator.Name}`" class="no-text-decoration grey--text">
+                                    {{ moderator.Name }}
+                                </router-link>
+                                <span v-if="i !== moderators.length - 1">, </span>
+                            </span>
+                        </v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
 
